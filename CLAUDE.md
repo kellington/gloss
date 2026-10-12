@@ -55,7 +55,9 @@ anything repo-specific under the heading below and it will be picked up.
        from it.
 -->
 
-- 
+- At end of session, append the next session's opening prompt to
+  `project/diary/diary-YYYY-MM.md` under a `### Next Prompt` heading
+  (self-contained, addressed to Alice, naming files and gates).
 
 The canonical reading environment is the Cloudflare-hosted app (Worker static assets + Cloudflare Access + D1 sync; `https://gloss.minus1over12.com` — see DECISIONS 2026-10-12). D1 is the real progress store; `localStorage` is a cache. `http://127.0.0.1:8765/multi-read/` (vault dashboard), `file://` and `localhost:5173` are dev/fallback contexts.
 
