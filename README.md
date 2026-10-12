@@ -1,16 +1,28 @@
-# Multi-Read
+# Gloss
 
-Multi-Read is a local-first prototype for adaptive reading. It starts with Chapter 1 of Alexandre Dumas's *Le Comte de Monte-Cristo* and lets a French learner move between three representations of each passage: plain, guided, and original.
+Gloss (formerly Multi-Read) is a prototype for adaptive reading. It starts with Chapter 1 of Alexandre Dumas's *Le Comte de Monte-Cristo* and lets a French learner move between three representations of each passage: plain, guided, and original.
 
 The point is not to build a big reading platform yet. The point is to make the core loop visible: read, ask for help, compare against the original, record friction, and adapt the next representation.
 
 ## Run It
 
-The canonical local URL is served by the Knowledge vault dashboard:
+The canonical app is hosted on Cloudflare, behind Cloudflare Access:
+
+<https://gloss.minus1over12.com>
+
+Reading progress syncs through a small Worker API backed by D1, so the Mac and iPhone share one reading state. Deploy steps: `project/deploy/GATES.md`.
+
+For local development, the Knowledge vault dashboard serves the repo at:
 
 <http://127.0.0.1:8765/multi-read/>
 
-Progress in `localStorage` under this origin is the real reading state.
+To run the Worker and sync API locally (http://localhost:8789):
+
+```sh
+npm install
+npm run db:migrate:local
+npm run dev
+```
 
 No dependencies are required for the fallback server:
 
@@ -42,7 +54,7 @@ Opening `index.html` directly is a throwaway fallback. The app is designed aroun
 
 ## Architecture
 
-This is intentionally just static HTML, CSS, and JavaScript.
+The app itself is static HTML, CSS, and JavaScript with no build step. A small Cloudflare Worker serves it and syncs reading state through D1.
 
 ```text
 index.html            App shell
@@ -52,6 +64,10 @@ data/monte-cristo/    Processed chapter JSON plus optional file-friendly JS wrap
 scripts/              EPUB extraction and chapter processing scripts
 assets/               Local visual assets
 Books/                Source EPUBs
+sw.js, manifest.json  PWA offline cache and home-screen install
+worker/               Cloudflare Worker: static assets, /api/state, Access JWT check, deploy allowlist
+migrations/           D1 schema
+public/               Generated deploy copy (gitignored)
 ```
 
 ## Chapter Workflow
@@ -107,4 +123,4 @@ This is a starting hypothesis, not a claim of intelligence.
 
 ## Non-Goals
 
-Multi-Read v0.1 does not include accounts, cloud sync, a complete EPUB library, TTS, SRS, embeddings, or production AI transformation. Those can come later if the reading loop proves interesting.
+Gloss v0.1 does not include multi-user accounts, a complete EPUB library, TTS, SRS, embeddings, or production AI transformation. Those can come later if the reading loop proves interesting.

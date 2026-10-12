@@ -13,6 +13,7 @@ is the real record. Don't let this file become the project's second STATE.md.
 
 Actively being worked on right now.
 
+- [ ] Run deploy Gates 1–7 in `project/deploy/GATES.md` (Rob); Alice/Gage fill `database_id` after Gate 2 and `ACCESS_AUD` after Gate 4. Then smoke-test sync Mac ↔ iPhone and offline reading (Quincy). Open: iPhone home-screen app + Access login may loop; reset/"Local Events" wording now covers synced state.
 - [ ] Read Chapter 1 in the vocabulary-aware app and collect app, vocabulary, and schema ideas for Chapter 2 in `project/ideas/feedback-c01.md`.
 
 ## Next

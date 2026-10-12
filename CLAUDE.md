@@ -1,4 +1,4 @@
-# Project Protocol — Multi-Read
+# Project Protocol — Gloss
 
 This file tells AI agents how to operate in this repo. Content about *what* the
 project is lives in the five sibling files — this file is about *how we work*,
@@ -9,7 +9,7 @@ plus durable project reference that agents need on hand.
 
 ## What this repo is, in one line
 
-Multi-Read is a static local-first prototype for adaptive language reading, starting with chapter-by-chapter processing of *Le Comte de Monte-Cristo*.
+Gloss (formerly Multi-Read; repo `kellington/gloss`, local folder `Rob/gloss/`) is a static prototype, hosted at `gloss.minus1over12.com` with cross-device sync, for adaptive language reading, starting with chapter-by-chapter processing of *Le Comte de Monte-Cristo*.
 
 ## Source of truth
 
@@ -57,7 +57,7 @@ anything repo-specific under the heading below and it will be picked up.
 
 - 
 
-The canonical local app URL is `http://127.0.0.1:8765/multi-read/`, served by the Knowledge vault dashboard (`com.robkellington.vault-dashboard`). Treat this HTTP origin as the real reading environment; `localStorage` there is the real progress store. `file://` and `localhost:5173` are fallback/test contexts.
+The canonical reading environment is the Cloudflare-hosted app (Worker static assets + Cloudflare Access + D1 sync; `https://gloss.minus1over12.com` — see DECISIONS 2026-10-12). D1 is the real progress store; `localStorage` is a cache. `http://127.0.0.1:8765/multi-read/` (vault dashboard), `file://` and `localhost:5173` are dev/fallback contexts.
 
 ## Milestones
 
@@ -82,7 +82,7 @@ config lives in "## Project status" below. Don't add a per-repo command.
 ## Project status
 
 ```yaml
-name: Multi-Read
+name: Gloss
 profile: Personal Project
 extra_sources:
   - project/ideas/feedback-c01.md
@@ -202,7 +202,13 @@ Processed chapter data lives in `data/monte-cristo/`: each chapter has canonical
 ### Commands
 
 ```
-# canonical local app
+# canonical app (after GATES.md Gate 7)
+open https://gloss.minus1over12.com/
+
+# local Worker + D1 dev (http://localhost:8789)
+npm install && npm run db:migrate:local && npm run dev
+
+# vault-dashboard dev copy (no sync)
 open http://127.0.0.1:8765/multi-read/
 
 # fallback local server
@@ -215,7 +221,7 @@ python3 -m http.server 5173
 open http://127.0.0.1:8765/multi-read/ and smoke-test mode switching, word help, navigation and reset
 
 # build / deploy
-n/a for v0.1 static prototype
+npm run dev / deploy run worker/build-public.mjs into gitignored public/; deploy only via project/deploy/GATES.md cards (Rob's go-ahead)
 ```
 
 ### Known gotchas
@@ -224,4 +230,7 @@ n/a for v0.1 static prototype
 - The French EPUB is a 55-chapter volume, not the whole novel. Vocabulary `futureFrequency` is relative to later chapters in that volume. Raw FLELex and Lexique tables are local and gitignored; source attribution is in `data/monte-cristo/README.md`.
 - The Penguin Classics and HarperCollins EPUBs were removed from Git history before the public push. Do not reintroduce them; review rights before tracking any new EPUB.
 - Chapter feedback goes in `project/ideas/feedback-c01.md` before processing C02.
-- The vault dashboard is read-only static hosting. If persistence beyond `localStorage` is needed, coordinate with the Knowledge/vault dashboard session rather than adding an API here.
+- Persistence lives in this repo's Worker API + D1 (DECISIONS 2026-10-12), not the vault dashboard. Deploys, D1 remote writes and DNS changes still need Rob's go-ahead each time.
+- Deploy allowlist is `worker/build-public.mjs`: a new runtime file must be added there or it won't deploy. API lives in `worker/`, D1 migrations in `migrations/`.
+- The vault dashboard returns 403 for `.webmanifest`, hence `manifest.json`. Editing root files (`index.html`, `sw.js`, `manifest.json`) needs a `wrangler dev` restart.
+- `Books/*.epub` is tracked in Git; never let it (or `scripts/`, `project/`, protocol files) into the deployed static assets.
