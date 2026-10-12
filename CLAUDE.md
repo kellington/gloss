@@ -9,7 +9,7 @@ plus durable project reference that agents need on hand.
 
 ## What this repo is, in one line
 
-Gloss (formerly Multi-Read; repo `kellington/gloss`, local folder still `Rob/multi-read/`) is a static prototype, hosted at `gloss.minus1over12.com` with cross-device sync, for adaptive language reading, starting with chapter-by-chapter processing of *Le Comte de Monte-Cristo*.
+Gloss (formerly Multi-Read; repo `kellington/gloss`, local folder `Rob/gloss/`) is a static prototype, hosted at `gloss.minus1over12.com` with cross-device sync, for adaptive language reading, starting with chapter-by-chapter processing of *Le Comte de Monte-Cristo*.
 
 ## Source of truth
 

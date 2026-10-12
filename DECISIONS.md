@@ -46,3 +46,10 @@ writing a design doc, which belongs elsewhere.
 **Why:** "Multi-Read" was dull; a gloss is a note explaining a word in context, which is the core interaction. Short enough to type on a phone.
 **Trade-off:** Rename churn across docs, the vault notes and the workspace README. The local folder stays `Rob/multi-read/` for now, so the vault-dashboard dev URL `127.0.0.1:8765/multi-read/` is unchanged.
 **Impact:** Worker, D1 database and subdomain are named `gloss`. Project docs say Gloss; Knowledge vault and workspace references are updated via handoffs.
+
+## [2026-10-12] — Rename local folder to Rob/gloss
+
+**Decision:** Move the repo folder from `Rob/multi-read/` to `Rob/gloss/`, with a temporary symlink `Rob/multi-read → gloss`.
+**Why:** Rob wants the name consistent everywhere; supersedes "folder stays for now" in the rename entry above.
+**Trade-off:** The vault dashboard hard-codes `../multi-read`; the symlink keeps `127.0.0.1:8765/multi-read/` working until the Knowledge session moves the route. `.venv` has absolute paths and must be recreated.
+**Impact:** Open future sessions in `Rob/gloss/`. Remove the symlink once the vault route points at `../gloss`.
