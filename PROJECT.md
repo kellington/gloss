@@ -1,10 +1,10 @@
-# Multi-Read
+# Gloss
 
-> A local-first reader that teaches the French worth learning for a book, eases less useful difficulty, and helps learners move toward the original text.
+> A reader that teaches the French worth learning for a book, eases less useful difficulty, and helps learners move toward the original text.
 
 ## Why This Exists
 
-Language learners quickly outgrow textbook passages, but real novels are often too hard to read without drowning in dictionary lookups. Multi-Read asks whether a reader can stay inside an authentic book while learning the vocabulary that will make later chapters easier. It should preserve useful recurring French, simplify difficulty with little learning payoff, and offer help without losing sight of the original.
+Language learners quickly outgrow textbook passages, but real novels are often too hard to read without drowning in dictionary lookups. Gloss asks whether a reader can stay inside an authentic book while learning the vocabulary that will make later chapters easier. It should preserve useful recurring French, simplify difficulty with little learning payoff, and offer help without losing sight of the original.
 
 The prototype starts with Chapter 1 of *Le Comte de Monte-Cristo*. Before the first fresh reading pass, Chapter 1 and the reader should include vocabulary-aware analysis and guidance. The learner will then restart the book, record friction and desired changes while reading, and use that evidence to revise the app and chapter schema before processing later chapters. Chapters are processed into JSON as needed, not all at once.
 
@@ -36,9 +36,9 @@ The prototype starts with Chapter 1 of *Le Comte de Monte-Cristo*. Before the fi
 
 ## Constraints
 
-- Keep v0.1 deliberately tiny: one book, one processed chapter at a time, one local browser app.
+- Keep v0.1 deliberately tiny: one book, one processed chapter at a time, one browser app (Mac and iPhone).
 - Use Chapter 1 as the first vocabulary-aware baseline. Keep the analysis and its decisions inspectable and correctable.
 - Do not require paid APIs for the first visual slice.
 - Put any future LLM transformation behind the chapter-processing workflow so the UI can run against static processed JSON.
 - Treat the supplied Monte-Cristo EPUB as source material; do not build around a proprietary service.
-- Use `http://127.0.0.1:8765/multi-read/` as the canonical local app URL; `localStorage` under that origin is the real progress store.
+- Use `https://gloss.minus1over12.com` (Cloudflare, Access-protected) as the canonical app URL; progress syncs through D1 so Mac and iPhone share one reading state. `http://127.0.0.1:8765/multi-read/` is the local dev URL.

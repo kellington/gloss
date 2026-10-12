@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Product name "gloss" (decided 2026-10-12). Every occurrence: project/deploy/GATES.md §Name map.
+  "name": "gloss", // Worker name (= dashboard Worker name)
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-09-16", // same as ZouZou / pickem
+  "workers_dev": false, // no *.workers.dev URL: Access only covers the custom domain
+  "preview_urls": false,
+  "build": {
+    // Copies the runtime allowlist into public/ before every `wrangler dev` and `wrangler deploy`.
+    // index.html/src stay at the repo root so 127.0.0.1:8765/multi-read/ keeps working unbuilt.
+    "command": "node worker/build-public.mjs",
+    "watch_dir": ["src", "assets", "data/monte-cristo"] // root files (index.html, sw.js, manifest) need a dev restart
+  },
+  "assets": {
+    "directory": "./public", // generated, gitignored; see worker/build-public.mjs (the allowlist)
+    "binding": "ASSETS",
+    "not_found_handling": "none", // plain 404s; this is not an SPA
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB", // npm scripts use the binding name, so they survive a rename
+      "database_name": "gloss",
+      "database_id": "00000000-0000-0000-0000-000000000000", // REPLACE with id from Gate 2 (`d1 create`); local dev ignores it
+      "migrations_dir": "./migrations"
+    }
+  ],
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "https://worldcities-trips.cloudflareaccess.com", // same Zero Trust team as pickem; no trailing slash
+    "ACCESS_AUD": "" // REPLACE with the Access application AUD tag from Gate 4. Empty = API fails closed (401).
+  },
+  // DEV_USER_EMAIL is passed only by `npm run dev` (--var) and is honoured only for localhost/127.0.0.1 hosts.
+  // Never add it to "vars" above.
+  "observability": { "enabled": true }
+}

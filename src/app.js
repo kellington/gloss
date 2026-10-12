@@ -46,8 +46,8 @@ loadChapter().then((chapter) => {
   els.passageText.innerHTML = `<p class="load-error">Could not load ${escapeHtml(CHAPTER_URL)}. Use the vault dashboard URL or regenerate the chapter data.</p>`;
 });
 
-function loadState() {
-  const fallback = {
+function defaultState() {
+  return {
     mode: "guided",
     passageIndex: 0,
     events: [],
@@ -55,11 +55,13 @@ function loadState() {
     currentHelp: null,
     compareOpen: false
   };
+}
 
+function loadState() {
   try {
-    return { ...fallback, ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
+    return { ...defaultState(), ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
   } catch {
-    return fallback;
+    return defaultState();
   }
 }
 
@@ -96,6 +98,126 @@ function loadScript(src) {
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  writeSyncMeta({ updatedAt: Date.now(), dirty: true });
+  schedulePush();
+}
+
+// --- Cross-device sync -------------------------------------------------------
+// localStorage stays the working copy; the Worker API (D1) is the shared store.
+// Whole-blob last-write-wins on updatedAt. If the API is unreachable (file://,
+// vault dashboard, python http.server, offline, Access session expired) sync
+// fails silently and the app keeps working from localStorage. Unsent changes
+// stay marked dirty and are pushed on the next online/focus/visibility event.
+
+const SYNC_KEY = `${STORAGE_KEY}-sync`;
+const SYNC_URL = "api/state"; // relative: /api/state in production, harmless 404 under /multi-read/
+const PUSH_DELAY_MS = 2000;
+const syncEnabled = location.protocol === "http:" || location.protocol === "https:";
+let pushTimer = null;
+let pullInFlight = false;
+
+function readSyncMeta() {
+  try {
+    return { updatedAt: 0, dirty: false, ...JSON.parse(localStorage.getItem(SYNC_KEY)) };
+  } catch {
+    return { updatedAt: 0, dirty: false };
+  }
+}
+
+function writeSyncMeta(meta) {
+  localStorage.setItem(SYNC_KEY, JSON.stringify(meta));
+}
+
+function startSync() {
+  if (!syncEnabled) return;
+  pullRemote();
+  window.addEventListener("focus", pullRemote);
+  window.addEventListener("online", () => pushLocal().then(pullRemote));
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") pullRemote();
+    else pushLocal({ keepalive: true });
+  });
+}
+
+function schedulePush() {
+  if (!syncEnabled) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushLocal, PUSH_DELAY_MS);
+}
+
+async function pullRemote() {
+  if (!syncEnabled || pullInFlight) return;
+  pullInFlight = true;
+  try {
+    const response = await fetch(SYNC_URL, { cache: "no-store", headers: { accept: "application/json" } });
+    if (!response.ok) return;
+    const remote = await response.json();
+    const meta = readSyncMeta();
+    if (remote.state && remote.updatedAt > meta.updatedAt) {
+      adoptRemote(remote);
+    } else if (meta.dirty) {
+      await pushLocal();
+    }
+  } catch {
+    // API unreachable or not JSON (e.g. an Access login redirect): stay local-only.
+  } finally {
+    pullInFlight = false;
+  }
+}
+
+async function pushLocal({ keepalive = false } = {}) {
+  if (!syncEnabled) return;
+  clearTimeout(pushTimer);
+  const meta = readSyncMeta();
+  if (!meta.dirty) return;
+  try {
+    const response = await fetch(SYNC_URL, {
+      method: "PUT",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ state, updatedAt: meta.updatedAt }),
+      keepalive
+    });
+    if (!response.ok) return;
+    const remote = await response.json();
+    if (readSyncMeta().updatedAt !== meta.updatedAt) return; // edited while in flight; next push covers it
+    if (remote.applied) {
+      writeSyncMeta({ updatedAt: meta.updatedAt, dirty: false });
+    } else if (remote.state && remote.updatedAt > meta.updatedAt) {
+      adoptRemote(remote); // another device wrote later
+    }
+  } catch {
+    // Offline or API missing: leave dirty for the next attempt.
+  }
+}
+
+function adoptRemote(remote) {
+  const next = { ...defaultState(), ...remote.state };
+  if (!difficultyOrder.includes(next.mode)) next.mode = "guided";
+  if (!Number.isInteger(next.passageIndex) || next.passageIndex < 0) next.passageIndex = 0;
+  if (!Array.isArray(next.events)) next.events = [];
+  if (!Array.isArray(next.translationsOpen)) next.translationsOpen = [];
+  for (const key of Object.keys(state)) delete state[key];
+  Object.assign(state, next);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  writeSyncMeta({ updatedAt: remote.updatedAt, dirty: false });
+  if (activeChapter) render();
+}
+
+async function resetState() {
+  // Overwrite (not delete) so last-write-wins also carries the reset to other devices.
+  for (const key of Object.keys(state)) delete state[key];
+  Object.assign(state, defaultState());
+  saveState();
+  await Promise.race([pushLocal({ keepalive: true }), new Promise((resolve) => setTimeout(resolve, 3000))]);
+  window.location.reload();
+}
+
+function registerServiceWorker() {
+  // Production (https) only, plus local `npm run dev` on :8789. Kept off the vault
+  // dashboard and python fallback so dev edits are never served stale from a cache.
+  const isWranglerDev = location.hostname === "localhost" && location.port === "8789";
+  if (!("serviceWorker" in navigator) || !(location.protocol === "https:" || isWranglerDev)) return;
+  navigator.serviceWorker.register("sw.js").catch((error) => console.warn("Service worker not registered", error));
 }
 
 function getPassage() {
@@ -378,6 +500,9 @@ els.nextPassage.addEventListener("click", () => {
 });
 
 els.resetButton.addEventListener("click", () => {
-  localStorage.removeItem(STORAGE_KEY);
-  window.location.reload();
+  resetState();
 });
+
+// Last, so the sync constants above are initialised before use.
+startSync();
+registerServiceWorker();

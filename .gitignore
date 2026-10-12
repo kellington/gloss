@@ -22,6 +22,9 @@ Thumbs.db
 
 # --- Build / deps -----------------------------------------------------------
 node_modules/
+.wrangler/
+.dev.vars
+public/
 dist/
 build/
 __pycache__/
