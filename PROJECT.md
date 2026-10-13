@@ -41,4 +41,4 @@ The prototype starts with Chapter 1 of *Le Comte de Monte-Cristo*. Before the fi
 - Do not require paid APIs for the first visual slice.
 - Put any future LLM transformation behind the chapter-processing workflow so the UI can run against static processed JSON.
 - Treat the supplied Monte-Cristo EPUB as source material; do not build around a proprietary service.
-- Use `https://gloss.minus1over12.com` (Cloudflare, Access-protected) as the canonical app URL; progress syncs through D1 so Mac and iPhone share one reading state. `http://127.0.0.1:8765/multi-read/` is the local dev URL.
+- Use `https://gloss.minus1over12.com` (Cloudflare, Access-protected) as the canonical app URL; progress syncs through D1 so Mac and iPhone share one reading state. `http://127.0.0.1:8765/gloss/` is the local dev URL.

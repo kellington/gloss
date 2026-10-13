@@ -1,7 +1,7 @@
 # Gloss — deploy gate cards
 
 Written by Gage on 2026-10-12. Plan reference: DECISIONS.md, 2026-10-12, "Host on Cloudflare with cross-device sync".
-**Rob runs every gate, one at a time, in order, from `/Users/rob/Documents/GitHub/Rob/multi-read`.**
+**Rob runs every gate, one at a time, in order, from `/Users/rob/Documents/GitHub/Rob/gloss`.**
 Paste each gate's output back before moving to the next one. Nothing here has been run.
 
 Order matters:
@@ -182,7 +182,7 @@ Paste back: pass/fail per step, and the `/api/state` JSON from step 4.
 
 ## Name map — every place "gloss" (and the old app name) appears
 
-Product name **Gloss** (decided 2026-10-12; was placeholder `reader`). GitHub repo `kellington/gloss`; local folder stays `Rob/multi-read`.
+Product name **Gloss** (decided 2026-10-12; was placeholder `reader`). GitHub repo `kellington/gloss`; local folder `Rob/gloss` (renamed 2026-10-12).
 
 | Where | Value | Notes |
 |---|---|---|
@@ -200,7 +200,7 @@ Product name **Gloss** (decided 2026-10-12; was placeholder `reader`). GitHub re
 Deliberately **not** renamed:
 - localStorage keys `multi-read-v0.1` / `multi-read-v0.1-sync`. Renaming them would orphan existing vault-dashboard progress.
 - npm scripts use the binding `DB`, not the database name, so they're rename-proof.
-- Repo-folder and vault paths (`/multi-read/`).
+- (Repo folder and vault-dashboard path moved to `Rob/gloss` / `/gloss/` on 2026-10-13.)
 
 ## Not covered by these gates
 - Workers Builds (CI deploy on push) is not set up. Deploys are manual (Gate 5 pattern). Wiring Builds is a separate card if wanted.

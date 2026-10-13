@@ -14,7 +14,7 @@ Reading progress syncs through a small Worker API backed by D1, so the Mac and i
 
 For local development, the Knowledge vault dashboard serves the repo at:
 
-<http://127.0.0.1:8765/multi-read/>
+<http://127.0.0.1:8765/gloss/>
 
 To run the Worker and sync API locally (http://localhost:8789):
 

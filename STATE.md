@@ -4,7 +4,7 @@
 
 ## Summary
 
-Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). A Cloudflare Worker + D1 + Access slice with cross-device sync and PWA offline support is built and verified locally; deploy Gates 1–7 in `project/deploy/GATES.md` are pending Rob. After Gate 7 the canonical URL is `https://gloss.minus1over12.com/`; until then it remains `http://127.0.0.1:8765/multi-read/`.
+Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). A Cloudflare Worker + D1 + Access slice with cross-device sync and PWA offline support is built and verified locally; deploy Gates 1–7 in `project/deploy/GATES.md` are pending Rob. After Gate 7 the canonical URL is `https://gloss.minus1over12.com/`; until then it remains `http://127.0.0.1:8765/gloss/`.
 
 ## What's working
 
@@ -39,7 +39,7 @@ Only what's non-obvious about the dev loop. Stable commands and stack facts
 belong in CLAUDE.md's Project Reference, not here — this file is rewritten
 constantly and reference material rots in it.
 
-Canonical app URL: `http://127.0.0.1:8765/multi-read/`.
+Canonical app URL: `http://127.0.0.1:8765/gloss/`.
 
 The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub/Rob/Knowledge` via LaunchAgent `com.robkellington.vault-dashboard` on `127.0.0.1:8765`. `python3 -m http.server 5173` is only a fallback. `localStorage` under `127.0.0.1:8765` is the real progress store; `file://` and `localhost:5173` state are throwaway.
 
