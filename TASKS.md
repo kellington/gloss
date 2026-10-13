@@ -20,6 +20,7 @@ Actively being worked on right now.
 
 The next handful, ordered.
 
+- [ ] Recreate `.venv` (absolute paths broke in the folder rename to `Rob/gloss`).
 - [ ] Review the reading notes, then revise the app, vocabulary rules, or chapter schema; decide whether and when to generate sentence meanings.
 - [ ] Process Chapter 2 into `data/monte-cristo/c02.json` and `c02.js` using the reviewed rules.
 
