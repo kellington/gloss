@@ -1,10 +1,10 @@
 # State
 
-*Last updated: 2026-10-12*
+*Last updated: 2026-10-13*
 
 ## Summary
 
-Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). A Cloudflare Worker + D1 + Access slice with cross-device sync and PWA offline support is built and verified locally; deploy Gates 1–7 in `project/deploy/GATES.md` are pending Rob. After Gate 7 the canonical URL is `https://gloss.minus1over12.com/`; until then it remains `http://127.0.0.1:8765/multi-read/`.
+Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). A Cloudflare Worker + D1 + Access slice with cross-device sync and PWA offline support is built and verified locally; deploy Gates 1–7 in `project/deploy/GATES.md` are pending Rob. After Gate 7 the canonical URL is `https://gloss.minus1over12.com/`; until then it remains `http://127.0.0.1:8765/gloss/`.
 
 ## What's working
 
@@ -39,7 +39,7 @@ Only what's non-obvious about the dev loop. Stable commands and stack facts
 belong in CLAUDE.md's Project Reference, not here — this file is rewritten
 constantly and reference material rots in it.
 
-Canonical app URL: `http://127.0.0.1:8765/multi-read/`.
+Canonical app URL: `https://gloss.minus1over12.com/` after deploy Gate 7; until then the vault-dashboard dev URL `http://127.0.0.1:8765/gloss/` (the `/multi-read/` route and `Rob/multi-read` symlink are gone as of 2026-10-13).
 
 The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub/Rob/Knowledge` via LaunchAgent `com.robkellington.vault-dashboard` on `127.0.0.1:8765`. `python3 -m http.server 5173` is only a fallback. `localStorage` under `127.0.0.1:8765` is the real progress store; `file://` and `localhost:5173` state are throwaway.
 
@@ -49,10 +49,12 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 - How much simplification is acceptable before a passage stops feeling like Dumas.
 - How much vocabulary guidance is helpful before highlighting becomes distracting.
 - What the fresh Chapter 1 reading pass will reveal before C02.
-- Work happens on branch `VScode-&-Codex`, which is ahead of `origin` and not merged into `main`. Push/merge is Rob's call.
+- Work happens on branch `VScode-&-Codex`, pushed to origin 2026-10-13 (95f8c04) but not merged. `origin/main` and the branch have diverged (2 commits each way), so merging needs a look first. Merge is Rob's call.
 - PLAN.md still shows the three vocabulary-analysis and integration criteria unchecked, although the baseline is implemented. Reconcile the checklist when the current milestone is closed.
 
 ## Resolved this session
+
+- 2026-10-13: Closed handoffs H-20261013-01/02. Removed `Rob/multi-read` symlink; dev URL references now `/gloss/`; dropped duplicate Next Prompt supplement from CLAUDE.md (gloss 95f8c04, Portfolio c87025a).
 
 - 2026-10-06: Configured the repo for the global `/project-status` skill (`## Project status` block in CLAUDE.md with `extra_sources` and `never_read`). Generated the first status page, `project/status/status-2026-10-06.html`, plus `STATUS-SUMMARY.md`.
 - Renamed `project/ideas/feeback-c01.md` → `feedback-c01.md` and updated every reference.

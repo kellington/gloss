@@ -110,7 +110,7 @@ function saveState() {
 // stay marked dirty and are pushed on the next online/focus/visibility event.
 
 const SYNC_KEY = `${STORAGE_KEY}-sync`;
-const SYNC_URL = "api/state"; // relative: /api/state in production, harmless 404 under /multi-read/
+const SYNC_URL = "api/state"; // relative: /api/state in production, harmless 404 under /gloss/ (vault dashboard)
 const PUSH_DELAY_MS = 2000;
 const syncEnabled = location.protocol === "http:" || location.protocol === "https:";
 let pushTimer = null;

@@ -55,9 +55,7 @@ anything repo-specific under the heading below and it will be picked up.
        from it.
 -->
 
-- 
-
-The canonical reading environment is the Cloudflare-hosted app (Worker static assets + Cloudflare Access + D1 sync; `https://gloss.minus1over12.com` — see DECISIONS 2026-10-12). D1 is the real progress store; `localStorage` is a cache. `http://127.0.0.1:8765/multi-read/` (vault dashboard), `file://` and `localhost:5173` are dev/fallback contexts.
+The canonical reading environment is the Cloudflare-hosted app (Worker static assets + Cloudflare Access + D1 sync; `https://gloss.minus1over12.com` — see DECISIONS 2026-10-12). D1 is the real progress store; `localStorage` is a cache. `http://127.0.0.1:8765/gloss/` (vault dashboard), `file://` and `localhost:5173` are dev/fallback contexts.
 
 ## Milestones
 
@@ -209,7 +207,7 @@ open https://gloss.minus1over12.com/
 npm install && npm run db:migrate:local && npm run dev
 
 # vault-dashboard dev copy (no sync)
-open http://127.0.0.1:8765/multi-read/
+open http://127.0.0.1:8765/gloss/
 
 # fallback local server
 python3 -m http.server 5173
@@ -218,7 +216,7 @@ python3 -m http.server 5173
 .venv/bin/python scripts/process_chapter.py --epub 'Books/Le_comte_de_Monte-Cristo_Tome_[...]Dumas_Alexandre_btv1b8600196s.epub' --chapter-path OEBPS/e08600196_c01.html --chapter-id c01 --title 'Marseille. L’arrivee.' --flelex data/lexical-sources/FleLex_TT_Beacco.tsv --lexique data/lexical-sources/Lexique400.tsv --out-json data/monte-cristo/c01.json --out-js data/monte-cristo/c01.js
 
 # test
-open http://127.0.0.1:8765/multi-read/ and smoke-test mode switching, word help, navigation and reset
+open http://127.0.0.1:8765/gloss/ and smoke-test mode switching, word help, navigation and reset
 
 # build / deploy
 npm run dev / deploy run worker/build-public.mjs into gitignored public/; deploy only via project/deploy/GATES.md cards (Rob's go-ahead)

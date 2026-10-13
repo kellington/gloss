@@ -8,7 +8,7 @@
   "preview_urls": false,
   "build": {
     // Copies the runtime allowlist into public/ before every `wrangler dev` and `wrangler deploy`.
-    // index.html/src stay at the repo root so 127.0.0.1:8765/multi-read/ keeps working unbuilt.
+    // index.html/src stay at the repo root so 127.0.0.1:8765/gloss/ keeps working unbuilt.
     "command": "node worker/build-public.mjs",
     "watch_dir": ["src", "assets", "data/monte-cristo"] // root files (index.html, sw.js, manifest) need a dev restart
   },
