@@ -1,13 +1,14 @@
 # State
 
-*Last updated: 2026-10-13*
+*Last updated: 2026-10-16*
 
 ## Summary
 
-Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). A Cloudflare Worker + D1 + Access slice with cross-device sync and PWA offline support is built and verified locally; deploy Gates 1–7 in `project/deploy/GATES.md` are pending Rob. After Gate 7 the canonical URL is `https://gloss.minus1over12.com/`; until then it remains `http://127.0.0.1:8765/gloss/`.
+Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). **Live since 2026-10-16** at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA): all deploy Gates 1–7 passed and Rob confirmed Mac ↔ iPhone sync, home-screen app and offline reading. Deploys come from `main`.
 
 ## What's working
 
+- Hosted app `https://gloss.minus1over12.com/` behind Access (policy `lecteurs`); D1 `gloss` (WNAM) holds learner state; Worker version `a810be38…` from `main` fcf3d48.
 - Static browser app in `index.html`, `src/app.js`, and `src/styles.css`.
 - Vocabulary-aware Chapter 1 data in `data/monte-cristo/c01.json`; `c01.js` remains optional for file-mode fallback.
 - Reproducible processing in `scripts/process_chapter.py` and `scripts/vocabulary.py`; `c01.vocabulary.json` and `c01.difficulty-map.json` expose the analysis.
@@ -19,7 +20,7 @@ Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor a
 
 ## In progress
 
-- The learner's fresh Chapter 1 reading and feedback pass in `project/ideas/feedback-c01.md`. Capture app, vocabulary, and schema ideas for Chapter 2, then review them before processing C02.
+- The learner's fresh Chapter 1 reading and feedback pass, now in the hosted app, in `project/ideas/feedback-c01.md`. Capture app, vocabulary, and schema ideas for Chapter 2, then review them before processing C02.
 
 ## Known issues
 
@@ -39,9 +40,9 @@ Only what's non-obvious about the dev loop. Stable commands and stack facts
 belong in CLAUDE.md's Project Reference, not here — this file is rewritten
 constantly and reference material rots in it.
 
-Canonical app URL: `https://gloss.minus1over12.com/` after deploy Gate 7; until then the vault-dashboard dev URL `http://127.0.0.1:8765/gloss/` (the `/multi-read/` route and `Rob/multi-read` symlink are gone as of 2026-10-13).
+Canonical app URL: `https://gloss.minus1over12.com/` (live 2026-10-16). Dev/fallback: vault dashboard `http://127.0.0.1:8765/gloss/` (local-only, no sync). Redeploy = `npm run deploy` from a clean `main`, Rob's go-ahead each time. `.venv` recreated 2026-10-16 (uv, Python 3.13, `requirements-processing.txt`, `fr_core_news_sm`).
 
-The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub/Rob/Knowledge` via LaunchAgent `com.robkellington.vault-dashboard` on `127.0.0.1:8765`. `python3 -m http.server 5173` is only a fallback. `localStorage` under `127.0.0.1:8765` is the real progress store; `file://` and `localhost:5173` state are throwaway.
+The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub/Rob/Knowledge` via LaunchAgent `com.robkellington.vault-dashboard` on `127.0.0.1:8765`. `python3 -m http.server 5173` is only a fallback. D1 is the real progress store; dashboard `localStorage`, `file://` and `localhost:5173` state are throwaway.
 
 ## Open questions
 
@@ -49,11 +50,11 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 - How much simplification is acceptable before a passage stops feeling like Dumas.
 - How much vocabulary guidance is helpful before highlighting becomes distracting.
 - What the fresh Chapter 1 reading pass will reveal before C02.
-- Work happens on branch `VScode-&-Codex`, pushed to origin 2026-10-13 (95f8c04) but not merged. `origin/main` and the branch have diverged (2 commits each way), so merging needs a look first. Merge is Rob's call.
 - PLAN.md still shows the three vocabulary-analysis and integration criteria unchecked, although the baseline is implemented. Reconcile the checklist when the current milestone is closed.
 
 ## Resolved this session
 
+- 2026-10-16: Deploy Gates 1–7 passed; Gloss live with sync. `VScode-&-Codex` was already merged (PR #3); work moved to `main`, pushed fcf3d48, branch deleted locally and on origin. `.venv` recreated. GATES.md has a run log with the as-built Access names.
 - 2026-10-13: Closed handoffs H-20261013-01/02. Removed `Rob/multi-read` symlink; dev URL references now `/gloss/`; dropped duplicate Next Prompt supplement from CLAUDE.md (gloss 95f8c04, Portfolio c87025a).
 
 - 2026-10-06: Configured the repo for the global `/project-status` skill (`## Project status` block in CLAUDE.md with `extra_sources` and `never_read`). Generated the first status page, `project/status/status-2026-10-06.html`, plus `STATUS-SUMMARY.md`.

@@ -2,7 +2,13 @@
 
 Written by Gage on 2026-10-12. Plan reference: DECISIONS.md, 2026-10-12, "Host on Cloudflare with cross-device sync".
 **Rob runs every gate, one at a time, in order, from `/Users/rob/Documents/GitHub/Rob/gloss`.**
-Paste each gate's output back before moving to the next one. Nothing here has been run.
+Paste each gate's output back before moving to the next one.
+
+**Run log — all 7 gates passed 2026-10-16** (deployed from `main` fcf3d48, Worker version `a810be38-99df-4a87-9ca8-1b7cfb977eaa`):
+- Gate 2: D1 `gloss` created in WNAM, id `25a1dde7-35f0-4c48-8da1-ed2e56c138cf`.
+- Gate 4 as built: app named `gloss` (lowercase), policy named `lecteurs` (Allow, Include Emails = Rob's address), Path empty, 1-month session, One-time PIN only. In the 2026 dashboard the AUD is under Access controls › Applications › gloss › **Additional settings** › "Application Audience (AUD) Tag" › Token (not Overview). Team domain confirmed `worldcities-trips` for account `fce41409…`.
+- Gate 6: zone export diff showed only the SOA serial; the Worker-managed `gloss` record doesn't appear in exports. `/` and `/api/state` both 302 to Access with `kid` = AUD.
+- Gate 7: Rob confirmed Mac ↔ iPhone sync, home-screen app and offline reading work.
 
 Order matters:
 1. The Access app (Gate 4) exists **before** the hostname is attached (Gate 6), so `gloss.minus1over12.com` is never publicly reachable.

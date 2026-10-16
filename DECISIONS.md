@@ -53,3 +53,10 @@ writing a design doc, which belongs elsewhere.
 **Why:** Rob wants the name consistent everywhere; supersedes "folder stays for now" in the rename entry above.
 **Trade-off:** The vault dashboard hard-codes `../multi-read`; the symlink keeps `127.0.0.1:8765/multi-read/` working until the Knowledge session moves the route. `.venv` has absolute paths and must be recreated.
 **Impact:** Open future sessions in `Rob/gloss/`. Remove the symlink once the vault route points at `../gloss`.
+
+## [2026-10-16] — Deploy from main; Gloss live
+
+**Decision:** Gloss is live at `gloss.minus1over12.com`. Deploys run `npm run deploy` from a clean, committed `main`; the `VScode-&-Codex` work branch is retired.
+**Why:** The deployed Worker should match a commit on the default branch; the branch was already fully merged (PR #3).
+**Trade-off:** Deploys stay manual (no Workers Builds), so each one needs Rob's go-ahead and a git-status check.
+**Impact:** Vault-dashboard URL is dev/fallback only. Access app `gloss` / policy `lecteurs` and D1 `gloss` (WNAM) are the production resources.

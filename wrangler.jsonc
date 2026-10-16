@@ -28,7 +28,7 @@
   ],
   "vars": {
     "ACCESS_TEAM_DOMAIN": "https://worldcities-trips.cloudflareaccess.com", // same Zero Trust team as pickem; no trailing slash
-    "ACCESS_AUD": "d1f0eed185311e89fc643083e3b6afcc8ba0a2b6e72b7c95179eca8f8f9905cb" // REPLACE with the Access application AUD tag from Gate 4. Empty = API fails closed (401).
+    "ACCESS_AUD": "d1f0eed185311e89fc643083e3b6afcc8ba0a2b6e72b7c95179eca8f8f9905cb" // from Gate 4 (Access app "gloss", 2026-10-16); empty = API fails closed (401)
   },
   // DEV_USER_EMAIL is passed only by `npm run dev` (--var) and is honoured only for localhost/127.0.0.1 hosts.
   // Never add it to "vars" above.

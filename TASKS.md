@@ -13,14 +13,12 @@ is the real record. Don't let this file become the project's second STATE.md.
 
 Actively being worked on right now.
 
-- [ ] Run deploy Gates 1–7 in `project/deploy/GATES.md` (Rob); Alice/Gage fill `database_id` after Gate 2 and `ACCESS_AUD` after Gate 4. Then smoke-test sync Mac ↔ iPhone and offline reading (Quincy). Open: iPhone home-screen app + Access login may loop; reset/"Local Events" wording now covers synced state.
-- [ ] Read Chapter 1 in the vocabulary-aware app and collect app, vocabulary, and schema ideas for Chapter 2 in `project/ideas/feedback-c01.md`.
+- [ ] Read Chapter 1 in the hosted app (`gloss.minus1over12.com`) and collect app, vocabulary, and schema ideas for Chapter 2 in `project/ideas/feedback-c01.md`.
 
 ## Next
 
 The next handful, ordered.
 
-- [ ] Recreate `.venv` (absolute paths broke in the folder rename to `Rob/gloss`).
 - [ ] Review the reading notes, then revise the app, vocabulary rules, or chapter schema; decide whether and when to generate sentence meanings.
 - [ ] Process Chapter 2 into `data/monte-cristo/c02.json` and `c02.js` using the reviewed rules.
 
@@ -30,12 +28,15 @@ Small near-term ideas that don't deserve an issue yet.
 
 - [ ] Add optional LLM-backed transformations behind the chapter processor.
 - [ ] Add an in-app chapter picker once more than one chapter is processed.
+- [ ] Optional: wire Workers Builds (deploy on push to `main`) — separate gate card.
 - [ ] Add a small smoke-test checklist or browser test for file-mode reader interactions.
 
 ## Done (recent)
 
 Cleared at each milestone.
 
+- [x] Deploy Gates 1–7: Gloss live at `gloss.minus1over12.com` with Mac ↔ iPhone sync and offline reading (2026-10-16).
+- [x] Recreate `.venv` after the folder rename (2026-10-16).
 - [x] Replace starter project docs with Multi-Read product docs.
 - [x] Build first static adaptive-reader visual slice.
 - [x] Add chapter-by-chapter processing workflow.
