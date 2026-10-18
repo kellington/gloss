@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gloss — Status 2026-10-17</title>
+<style>
+:root{--primary:#1f5f3f;--accent:#3a9d5d;--bg:#f6f8f6;--card:#fff;--ink:#1d2a22;--muted:#6b7a70;--green:#2e8b57;--amber:#c98a00;--red:#c0392b;--grey:#8a8f8c;--line:#dfe6e0}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--primary);color:#fff;padding:24px 32px}
+header h1{margin:0;font-size:28px}
+header .meta{opacity:.85;font-size:14px;margin-top:6px}
+.badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;margin-left:8px;vertical-align:middle}
+.b-green{background:var(--green);color:#fff}.b-amber{background:var(--amber);color:#fff}.b-red{background:var(--red);color:#fff}.b-grey{background:var(--grey);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+section.full{grid-column:1/-1}
+h2{margin:0 0 10px;font-size:17px;color:var(--primary)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:#e8f1eb;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+ul{margin:6px 0;padding-left:20px}
+li{margin:3px 0}
+.chk{list-style:none;padding-left:4px}
+.src{color:var(--muted);font-size:12px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.cols h3{font-size:14px;margin:0 0 4px;color:var(--muted)}
+footer{max-width:1100px;margin:0 auto;padding:0 24px 32px;color:var(--muted);font-size:12px}
+@media(max-width:760px){main{grid-template-columns:1fr}.cols{grid-template-columns:1fr}header{padding:20px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Gloss <span class="badge b-green">Live prototype</span></h1>
+<div class="meta">Personal Project · Personal group · priority 21 · https://gloss.minus1over12.com · 2026-10-17</div>
+</header>
+<main>
+
+<section class="full">
+<h2>Snapshot</h2>
+<div class="pills">
+<span class="pill">Stack: static HTML/CSS/vanilla JS + Cloudflare Worker + D1</span>
+<span class="pill">Hosting: Cloudflare Workers (static assets) behind Access</span>
+<span class="pill">Milestone: v0.1 vocabulary-aware Chapter 1 baseline</span>
+<span class="pill">DoD: 7 / 10 checked</span>
+<span class="pill">Tasks: Now 1 · Next 2 · Later 4 · Done 8</span>
+<span class="pill">Chapters processed: 1</span>
+</div>
+<div class="src">Source: PLAN.md, TASKS.md, STATE.md</div>
+</section>
+
+<section class="full">
+<h2>Purpose</h2>
+<p>A reader that teaches the French worth learning for a book, eases less useful difficulty, and helps learners move toward the original text — starting with Chapter 1 of <em>Le Comte de Monte-Cristo</em>.</p>
+<div class="src">Source: PROJECT.md</div>
+</section>
+
+<section class="full">
+<h2>Since last status (2026-10-06)</h2>
+<ul>
+<li><strong>New decisions:</strong> 4 — host on Cloudflare with D1 sync (10-12), rename to Gloss (10-12), rename local folder to <code>Rob/gloss</code> (10-12), deploy from main / Gloss live (10-16).</li>
+<li><strong>Now-list change:</strong> C01 reading pass moved from the vault dashboard to the hosted app.</li>
+<li><strong>Milestone change:</strong> none — PLAN.md unchanged since 2026-09-29.</li>
+</ul>
+<div class="src">Source: DECISIONS.md, TASKS.md, status-2026-10-06.html, git log</div>
+</section>
+
+<section>
+<h2>Platform</h2>
+<p><span class="badge b-green" style="margin-left:0">Live</span> since 2026-10-16. Deploy Gates 1–7 passed; Mac ↔ iPhone sync, home-screen PWA and offline reading confirmed. Deploys are manual (<code>npm run deploy</code> from clean <code>main</code>, Rob's go-ahead each time).</p>
+<div class="src">Source: STATE.md, DECISIONS.md</div>
+</section>
+
+<section>
+<h2>Next session</h2>
+<p>Keep reading C01 in the hosted app and log friction in <code>feedback-c01.md</code>; then review notes and revise app / vocabulary rules / schema before processing C02.</p>
+<div class="src">Source: TASKS.md</div>
+</section>
+
+<section class="full">
+<h2>Current milestone — Definition of Done</h2>
+<ul class="chk">
+<li>☑ Project docs describe vision, learner model, constraints, non-goals</li>
+<li>☑ Repo identifies the actual French EPUB</li>
+<li>☑ Static UI shows C01 in plain, guided, original</li>
+<li>☑ Contextual word help and original-text comparison</li>
+<li>☐ Reader supports vocabulary decisions from C01 analysis <em>(STATE says implemented; checklist not reconciled)</em></li>
+<li>☐ C01 preprocessing produces vocabulary records + difficulty map <em>(STATE says implemented; checklist not reconciled)</em></li>
+<li>☐ Plain/Guided revised using the map <em>(STATE says implemented; checklist not reconciled)</em></li>
+<li>☑ Local event model tracks lookups, translations, representation changes</li>
+<li>☑ Rule-based adaptation engine recommends next step</li>
+<li>☑ EPUB parser extracts C01 to JSON + JS wrapper</li>
+</ul>
+<div class="src">Source: PLAN.md, STATE.md open questions</div>
+</section>
+
+<section class="full">
+<h2>Working / in progress / known issues</h2>
+<div class="cols">
+<div><h3>Working</h3><ul>
+<li>Hosted app + D1 learner state (Worker from main fcf3d48)</li>
+<li>Vocabulary-aware C01 data and reader modes</li>
+<li>Reproducible processing scripts (spaCy, FLELex, Lexique)</li>
+<li><code>.venv</code> recreated 2026-10-16</li>
+</ul></div>
+<div><h3>In progress</h3><ul>
+<li>Fresh C01 reading pass; 3 notes logged so far in <code>feedback-c01.md</code> (plus 1 app note, 1 future idea)</li>
+</ul></div>
+<div><h3>Known issues</h3><ul>
+<li>Naive learner model</li>
+<li>Plain mode not a reviewed B1 simplification</li>
+<li>Lemma / name / join errors possible</li>
+<li>Frequencies cover 55-chapter volume only</li>
+<li>No sentence translations in schema v2</li>
+</ul></div>
+</div>
+<div class="src">Source: STATE.md, project/ideas/feedback-c01.md</div>
+</section>
+
+<section class="full">
+<h2>Task board</h2>
+<div class="cols">
+<div><h3>Now</h3><ul><li>Read C01 in the hosted app; collect ideas in feedback-c01.md</li></ul></div>
+<div><h3>Next</h3><ul><li>Review notes; revise app / vocab rules / schema; decide on sentence meanings</li><li>Process Chapter 2 (c02.json / c02.js)</li></ul></div>
+<div><h3>Later (backlog top 4)</h3><ul><li>Optional LLM-backed transformations</li><li>In-app chapter picker</li><li>Optional Workers Builds (deploy on push)</li><li>Smoke-test checklist / browser test</li></ul></div>
+</div>
+<div class="src">Source: TASKS.md</div>
+</section>
+
+<section class="full">
+<h2>Recent decisions</h2>
+<ul>
+<li><strong>2026-10-16</strong> — Deploy from main; Gloss live.</li>
+<li><strong>2026-10-12</strong> — Rename local folder to <code>Rob/gloss</code>.</li>
+<li><strong>2026-10-12</strong> — Rename the product to Gloss.</li>
+<li><strong>2026-10-12</strong> — Host on Cloudflare with cross-device sync (supersedes vault-dashboard origin).</li>
+<li><strong>2026-09-28</strong> — Serve through vault dashboard (superseded).</li>
+</ul>
+<div class="src">Source: DECISIONS.md</div>
+</section>
+
+<section class="full">
+<h2>Risks</h2>
+<table>
+<tr><th>#</th><th>Risk</th><th>Severity</th><th>Next move</th></tr>
+<tr><td>1</td><td>PROJECT.md non-goals/constraints still exclude sync, cloud infra and off-browser learning data — contradicts the live D1 setup (DECISIONS 2026-10-12)</td><td><span class="dot" style="background:var(--amber)"></span>Medium</td><td>Rob to confirm; update PROJECT.md non-goals at next milestone</td></tr>
+<tr><td>2</td><td>PLAN.md DoD lags reality by 3 items; milestone not formally closed</td><td><span class="dot" style="background:var(--amber)"></span>Medium</td><td>Run milestone checkpoint: rewrite PLAN.md, prune TASKS.md</td></tr>
+<tr><td>3</td><td>Simplification may erase Dumas' style</td><td><span class="dot" style="background:var(--amber)"></span>Medium</td><td>Keep Original visible; judge from C01 reading notes</td></tr>
+<tr><td>4</td><td>OCR quirks / lemma errors in Gallica EPUB</td><td><span class="dot" style="background:var(--amber)"></span>Low</td><td>Hand-review vocabulary output before C02</td></tr>
+<tr><td>5</td><td>Manual deploys could drift from main</td><td><span class="dot" style="background:var(--grey)"></span>Low</td><td>Deferred: optional Workers Builds gate card (Later)</td></tr>
+</table>
+<div class="src">Source: PLAN.md Open Risks, PROJECT.md, STATE.md, DECISIONS.md (derived)</div>
+</section>
+
+<section class="full">
+<h2>Source freshness</h2>
+<table>
+<tr><th>Source</th><th>Last change</th><th></th></tr>
+<tr><td>STATE.md</td><td>2026-10-16</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>TASKS.md</td><td>2026-10-16</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>DECISIONS.md</td><td>2026-10-16</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>CLAUDE.md</td><td>2026-10-13</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>PROJECT.md</td><td>2026-10-13</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>project/ideas/feedback-c01.md</td><td>2026-10-06</td><td><span class="dot" style="background:var(--green)"></span>current</td></tr>
+<tr><td>PLAN.md</td><td>2026-09-29</td><td><span class="dot" style="background:var(--green)"></span>current (17 days behind newest)</td></tr>
+</table>
+<p style="font-size:13px">Newest source is 1 day old — repo active.</p>
+<div class="src">Source: git log -1 --format=%cs per file</div>
+</section>
+
+</main>
+<footer>
+Generated 2026-10-17 · derived from PROJECT.md, PLAN.md, STATE.md, TASKS.md, DECISIONS.md, CLAUDE.md, project/ideas/feedback-c01.md, status-2026-10-06.html, git log.<br>
+Colours: red = blocks use, high-severity security, or no owner/next action · amber = known gap with accepted next action · green = shipped and recently verified · grey = deliberately deferred.
+</footer>
+</body>
+</html>
