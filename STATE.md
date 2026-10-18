@@ -1,6 +1,6 @@
 # State
 
-*Last updated: 2026-10-16*
+*Last updated: 2026-10-17*
 
 ## Summary
 
@@ -51,9 +51,11 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 - How much vocabulary guidance is helpful before highlighting becomes distracting.
 - What the fresh Chapter 1 reading pass will reveal before C02.
 - PLAN.md still shows the three vocabulary-analysis and integration criteria unchecked, although the baseline is implemented. Reconcile the checklist when the current milestone is closed.
+- PROJECT.md Non-Goals ("sync, or cloud infrastructure", "storing personal learning data outside the browser") contradict the live D1 sync (DECISIONS 2026-10-12). Which is right? Asked in STATUS-SUMMARY.
 
 ## Resolved this session
 
+- 2026-10-17 (unattended refresh): no open handoffs for gloss; status page `project/status/status-2026-10-17.html` and STATUS-SUMMARY refreshed (name/tagline now Gloss).
 - 2026-10-16: Deploy Gates 1–7 passed; Gloss live with sync. `VScode-&-Codex` was already merged (PR #3); work moved to `main`, pushed fcf3d48, branch deleted locally and on origin. `.venv` recreated. GATES.md has a run log with the as-built Access names.
 - 2026-10-13: Closed handoffs H-20261013-01/02. Removed `Rob/multi-read` symlink; dev URL references now `/gloss/`; dropped duplicate Next Prompt supplement from CLAUDE.md (gloss 95f8c04, Portfolio c87025a).
 
