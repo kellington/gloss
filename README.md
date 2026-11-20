@@ -1,6 +1,6 @@
 # Gloss
 
-Gloss (formerly Multi-Read) is a prototype for adaptive reading. It starts with Chapter 1 of Alexandre Dumas's *Le Comte de Monte-Cristo* and lets a French learner move between three representations of each passage: plain, guided, and original.
+Gloss (formerly Multi-Read) is a prototype for adaptive reading. It starts with Chapter 1 of Alexandre Dumas's *Le Comte de Monte-Cristo* and lets a French learner move between three levels of each passage: Simple (A2), Advanced (B2), and Original.
 
 The point is not to build a big reading platform yet. The point is to make the core loop visible: read, ask for help, compare against the original, record friction, and adapt the next representation.
 
@@ -41,9 +41,10 @@ Opening `index.html` directly is a throwaway fallback. The app is designed aroun
 - A visual cover asset extracted from that EPUB:
   `assets/monte-cristo-cover.jpg`
 - Three checked-in passage representations:
-  - `plain`: selected low-value nautical and literary terms eased, plus segmentation into smaller reading units. This still needs reading review.
-  - `guided`: original prose with highlighted vocabulary guidance.
+  - `simple`: an authored A2 retelling in the present tense; at most 20 words in the chapter need support.
+  - `advanced`: an authored B2 rewrite of the full chapter in modern French.
   - `original`: normalized source text from the EPUB.
+- Each level has its own vocabulary list. Authored text and word lists live in `data/monte-cristo/c01.adaptations.json`, written to `scripts/adaptation-brief.md` and checked against FLELex in `c01.level-check.json`.
 - Contextual word help with a teaching choice and later-occurrence count from the available volume.
 - A visible set of words worth learning in each passage.
 - Sentence-level meaning data hooks; C01 has no translations, so the reader hides those controls for now.
@@ -85,7 +86,7 @@ Books/...epub (55 available French chapters)
 
 The vocabulary record includes lemma, part of speech, Chapter 1 and available-volume recurrence, later occurrences, modern-frequency band, CEFR level when matched, name handling, and an inspectable teach/simplify/light-gloss decision. See [chapter data notes](data/monte-cristo/README.md) for source attribution and limits. Raw lexical tables stay in the ignored `data/lexical-sources/` folder.
 
-The [Chapter 1 review notes](data/monte-cristo/c01.simplification-notes.md) list which decisions actually changed Plain mode and what to watch during the fresh reading pass.
+The [Chapter 1 level notes](data/monte-cristo/c01.simplification-notes.md) list what Simple and Advanced changed and what to watch during the fresh reading pass.
 
 To rebuild Chapter 1, use Python 3.13 for the processing environment. Download the source tables from the [FLELex](https://cental.uclouvain.be/cefrlex/flelex/download/) and [Lexique 4](https://lexique.org/databases/Lexique400/) sites into `data/lexical-sources/`, then run:
 

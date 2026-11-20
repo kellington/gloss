@@ -22,14 +22,15 @@ NAMES = {
     "notre-dame-de-la-garde", "château d’if", "chateau d'if", "canebière",
 }
 COMMON_DISCOURSE = {"oui", "non", "monsieur", "madame"}
+# Keys are accent-folded (loose_fold) headwords.
 GLOSSARY_TREATMENT = {
     "pharaon": "ignore_or_gloss", "smyrne": "ignore_or_gloss",
     "trieste": "ignore_or_gloss", "naples": "ignore_or_gloss",
-    "chateau d'if": "ignore_or_gloss", "canebière": "ignore_or_gloss",
+    "chateau d'if": "ignore_or_gloss", "canebiere": "ignore_or_gloss",
     "trois-mats": "ignore_or_gloss", "pilote cotier": "ignore_or_gloss",
     "haubans": "simplify", "beaupre": "simplify", "huniers": "simplify",
     "foc": "simplify", "brigantine": "simplify", "ecoutes": "simplify",
-    "drisses": "simplify", "cargues": "simplify", "fièvre cérébrale": "ignore_or_gloss",
+    "drisses": "simplify", "cargues": "simplify", "fievre cerebrale": "ignore_or_gloss",
 }
 
 
@@ -265,14 +266,14 @@ def enrich_glossary(glossary, records, chapter_text, later_text):
                 "chapterCount": chapter_count, "bookCount": chapter_count + future,
                 "futureFrequency": future, "generalFrenchFrequencyBand": None,
                 "cefrLevel": None, "archaicOrLiterary": False,
-                "properNoun": fold(headword) in NAMES, "forms": [headword],
+                "properNoun": fold(headword) in NAMES or headword[:1].isupper(), "forms": [headword],
                 "classification": "ignore_or_gloss", "reason": "Curated contextual help.",
             })
-        override = GLOSSARY_TREATMENT.get(fold(headword))
+        override = GLOSSARY_TREATMENT.get(loose_fold(headword))
         if override:
             entry["classification"] = override
             entry["reason"] = {
-                "simplify": "Specialized one-off nautical vocabulary; Plain mode can use familiar French.",
+                "simplify": "Specialized one-off nautical vocabulary; Simple and Advanced use familiar French instead.",
                 "ignore_or_gloss": "Useful context here, but not an active vocabulary target.",
             }[override]
     return glossary
@@ -292,4 +293,83 @@ def difficulty_map(records):
         "teach": sorted({record["lemma"] for record in records if record["classification"] == "teach"}),
         "simplify": sorted({record["lemma"] for record in records if record["classification"] == "simplify"}),
         "ignoreOrGloss": sorted({record["lemma"] for record in records if record["classification"] == "ignore_or_gloss"}),
+    }
+
+
+CEFR_ORDER = ["A1", "A2", "B1", "B2", "C1", "C2"]
+
+
+def lemma_levels(flelex):
+    """Lowest FLELex level per lemma regardless of tag, as a fallback for tagging errors."""
+    lowest = {}
+    for (lemma, _), level in flelex.items():
+        if lemma not in lowest or CEFR_ORDER.index(level) < CEFR_ORDER.index(lowest[lemma]):
+            lowest[lemma] = level
+    return lowest
+
+
+def load_lexique_forms(path: Path | None):
+    """Surface form -> lemmas from Lexique, to recover from spaCy lemmatizer misses."""
+    forms = defaultdict(set)
+    if path:
+        for row in read_table(path):
+            form = first_value(row, "1_Mot", "ortho", "mot")
+            lemma = first_value(row, "4_Lemme", "lemme", "lemma")
+            if form and lemma:
+                forms[fold(form)].add(fold(lemma))
+    return forms
+
+
+def level_check(paragraphs, nlp, flelex, target, supported=(), transparent=(), form_lemmas=None):
+    """List the content words of an adapted text that sit above its CEFR target.
+
+    A word passes when FLELex first attests it at or below the target, when it is one
+    of the level's supported (glossed) words, or when it is listed as a transparent
+    cognate or name. Everything else is reported so the text or word list can be fixed.
+    """
+    any_pos = lemma_levels(flelex)
+    form_lemmas = form_lemmas or {}
+
+    def lowest_level(surface, lemma, pos):
+        candidates = {lemma, surface, *form_lemmas.get(surface, ())}
+        candidates |= {word.replace("œ", "oe") for word in candidates}
+        found = [flelex.get((lemma, pos)), *(any_pos.get(word) for word in candidates)]
+        found = [level for level in found if level]
+        return min(found, key=CEFR_ORDER.index) if found else None
+
+    limit = CEFR_ORDER.index(target)
+    supported = {loose_fold(form) for form in supported}
+    transparent = {loose_fold(form) for form in transparent}
+    above, unmatched, supported_hits = Counter(), Counter(), Counter()
+    levels = {}
+    words = 0
+    for doc in nlp.pipe(paragraphs, batch_size=64):
+        for index, token in enumerate(doc):
+            if not token.is_alpha:
+                continue
+            words += 1
+            surface = fold(token.text)
+            lemma = fold(token.lemma_ or token.text)
+            if loose_fold(surface) in supported or loose_fold(lemma) in supported:
+                supported_hits[lemma] += 1
+                continue
+            if token.is_stop or len(surface) < 2:
+                continue
+            if surface in NAMES or lemma in NAMES or loose_fold(surface) in transparent or loose_fold(lemma) in transparent:
+                continue
+            if token.text[0].isupper() and index > 0 and doc[index - 1].text not in {".", "!", "?", "—", "«", ":", "…"}:
+                continue  # mid-sentence capital: a name or place
+            pos = "VERB" if token.pos_ == "AUX" else token.pos_
+            level = lowest_level(surface, lemma, pos)
+            if level is None:
+                unmatched[surface] += 1
+            elif CEFR_ORDER.index(level) > limit:
+                above[surface] += 1
+                levels[surface] = level
+    return {
+        "target": target,
+        "words": words,
+        "supportedOccurrences": sum(supported_hits.values()),
+        "aboveTarget": [{"word": word, "level": levels[word], "count": count} for word, count in above.most_common()],
+        "unmatched": [{"word": word, "count": count} for word, count in unmatched.most_common()],
     }
