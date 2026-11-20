@@ -14,8 +14,10 @@ from vocabulary import (
     chapter_sources,
     difficulty_map,
     enrich_glossary,
+    level_check,
     load_flelex,
     load_lexique,
+    load_lexique_forms,
     load_nlp,
     loose_fold,
 )
@@ -23,21 +25,21 @@ from vocabulary import (
 
 GLOSSARY = {
     "vigie": ("lookout; watch post", "Can mean the watcher or the lookout position."),
-    "trois-mats": ("three-masted ship", "A sailing vessel with three masts."),
-    "pharaon": ("the ship's name", "Dantes is second mate on this vessel."),
-    "smyrne": ("Smyrna, now Izmir in Turkey", "One of the Pharaon's eastern Mediterranean ports."),
-    "trieste": ("a port city on the Adriatic", "Another stop on the Pharaon's route."),
-    "naples": ("Naples", "The last named port before Marseille."),
-    "pilote cotier": ("coastal pilot", "A local specialist who guides ships through harbor waters."),
-    "aussitot": ("immediately, at once", "Often marks quick action in narration."),
-    "chateau d'if": ("fortress on an island off Marseille", "This place becomes important later in the novel."),
+    "trois-mâts": ("three-masted ship", "A sailing vessel with three masts."),
+    "Pharaon": ("the ship's name", "Dantes is second mate on this vessel."),
+    "Smyrne": ("Smyrna, now Izmir in Turkey", "One of the Pharaon's eastern Mediterranean ports."),
+    "Trieste": ("a port city on the Adriatic", "Another stop on the Pharaon's route."),
+    "Naples": ("Naples", "The last named port before Marseille."),
+    "pilote côtier": ("coastal pilot", "A local specialist who guides ships through harbor waters."),
+    "aussitôt": ("immediately, at once", "Often marks quick action in narration."),
+    "château d'If": ("fortress on an island off Marseille", "This place becomes important later in the novel."),
     "navire": ("ship, vessel", "A more formal word than bateau."),
-    "batiment": ("vessel, ship", "In this chapter it is nautical, not a building."),
+    "bâtiment": ("vessel, ship", "In this chapter it is nautical, not a building."),
     "armateur": ("shipowner", "A person or company that equips and operates merchant ships."),
     "curieux": ("curious onlookers", "As a noun here, people who gather to watch."),
     "mouillage": ("anchoring; anchorage", "The act or place of anchoring a ship."),
     "haubans": ("stays, rigging cables", "Cables that support a mast."),
-    "beaupre": ("bowsprit", "A spar projecting from the front of a sailing ship."),
+    "beaupré": ("bowsprit", "A spar projecting from the front of a sailing ship."),
     "huniers": ("topsails", "Sails set above the lower sails."),
     "foc": ("jib", "A triangular sail near the front of a ship."),
     "brigantine": ("spanker sail", "A fore-and-aft sail on the after mast."),
@@ -50,7 +52,7 @@ GLOSSARY = {
     "cargaison": ("cargo", "The load of goods on a vessel."),
     "fièvre cérébrale": ("brain fever", "An older expression for a severe fever affecting the brain."),
     "matelots": ("sailors", "Members of the ship's crew."),
-    "ecoutes": ("sheets", "Ropes used to control sails."),
+    "écoutes": ("sheets", "Ropes used to control sails."),
     "drisses": ("halyards", "Ropes used to raise sails."),
     "cargues": ("clewlines or brails", "Ropes used to gather in sails."),
     "hamac": ("hammock", "Used here in the burial at sea description."),
@@ -62,13 +64,13 @@ GLOSSARY = {
     "relâche": ("stopover", "A pause in a voyage."),
     "douane": ("customs", "Officials who inspect goods entering port."),
     "consigne": ("port authority office", "Here, harbor administration."),
-    "canebière": ("La Canebiere", "A famous street in Marseille."),
-    "dantès": ("Edmond Dantès", "The young sailor serving aboard the Pharaon."),
-    "edmond": ("Edmond Dantès", "The young sailor at the center of the story."),
-    "morrel": ("Morrel", "The shipowner who trusts Dantès."),
-    "danglars": ("Danglars", "The ship's accountant, uneasy about Dantès."),
-    "leclère": ("Captain Leclère", "The Pharaon's captain, whose death is reported in this chapter."),
-    "marseille": ("Marseille", "The French port where the Pharaon returns."),
+    "Canebière": ("La Canebiere", "A famous street in Marseille."),
+    "Dantès": ("Edmond Dantès", "The young sailor serving aboard the Pharaon."),
+    "Edmond": ("Edmond Dantès", "The young sailor at the center of the story."),
+    "Morrel": ("Morrel", "The shipowner who trusts Dantès."),
+    "Danglars": ("Danglars", "The ship's accountant, uneasy about Dantès."),
+    "Leclère": ("Captain Leclère", "The Pharaon's captain, whose death is reported in this chapter."),
+    "Marseille": ("Marseille", "The French port where the Pharaon returns."),
     "capitaine": ("captain", "The commander of a ship."),
     "équipage": ("crew", "The people working on a ship."),
     "empereur": ("emperor", "In this story, Napoleon."),
@@ -81,27 +83,12 @@ GLOSSARY = {
     "résolution": ("determination", "Dantès's calm resolve in the face of danger."),
     "interlocuteur": ("person being spoken to", "The person in the conversation with Dantès."),
     "rames": ("oars", "The blades used to propel the small boat."),
+    "gréé": ("rigged", "Fitted with masts, ropes and sails."),
+    "arrimé": ("stowed, loaded", "With its cargo packed and secured."),
 }
 
-PLAIN_REPLACEMENTS = (
-    (r"\bla vigie\b", "le guetteur"),
-    (r"\ble trois-màts le Pharaon\b", "le navire Pharaon à trois mâts"),
-    (r"\bses trois huniers\b", "ses trois voiles hautes"),
-    (r"\bson grand foc\b", "sa grande voile avant"),
-    (r"\bsa brigantine\b", "sa voile arrière"),
-    (r"\bses haubans de beaupré décrochés\b", "ses cordages à l'avant du navire détachés"),
-    (r"\bune fièvre cérébrale\b", "une grave fièvre"),
-    (r"\bson ancre était au mouillage\b", "son ancre était prête"),
-    (r"\bau mouillage\b", "à l'ancrage"),
-    (r"\ble mouillage\b", "l'ancrage"),
-    (r"\bson mouillage\b", "son ancrage"),
-    (r"\bne point escompter pour 25, 000 francs\b", "ne pas compter sur 25 000 francs"),
-    (r"\bobséquieux envers\b", "flatteur envers"),
-    (r"\bles écoutes\b", "les cordages des voiles"),
-    (r"\baux drisses\b", "aux cordages qui hissent les voiles"),
-    (r"\baux cargues des voiles\b", "aux cordages qui replient les voiles"),
-    (r"\ble foc et la brigantine\b", "la voile avant et la voile arrière"),
-)
+LEVELS = ("simple", "advanced", "original")
+SIMPLE_SUPPORT_LIMIT = 20  # words per chapter that may need support in Simple
 
 GLOSSARY_FORMS = {
     "trois-mats": ["trois-màts"],
@@ -156,23 +143,40 @@ def split_sentences(paragraph):
     return sentences or [paragraph]
 
 
-def plain_units(paragraph):
-    text = paragraph
-    for pattern, replacement in PLAIN_REPLACEMENTS:
-        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
-    if not text.startswith("—") and "—" not in text:
-        text = re.sub(
-            r";\s+((?:il|elle|ils|elles|je|nous|vous|tu|le|la|les|un|une|ce|cette|son|sa|ses)\b)",
-            lambda match: ". " + match.group(1).capitalize(), text, flags=re.IGNORECASE,
-        )
-    text = re.sub(r"\s+", " ", text)
-    return [unit[0].upper() + unit[1:] for unit in split_sentences(text)]
+def adapted_text(value):
+    """Normalise authored Simple/Advanced text to the same conventions as the source."""
+    value = normalize_text(value.replace("'", "’"))
+    return value.replace("« ", "«\u00a0").replace(" »", "\u00a0»")
 
 
-def glossary_keys_for(text, entries=None):
+def load_adaptations(path, paragraph_count):
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = data["paragraphs"]
+    if [row["n"] for row in rows] != list(range(1, paragraph_count + 1)):
+        raise SystemExit(f"{path}: expected paragraphs 1..{paragraph_count} in order")
+    for row in rows:
+        for level in ("simple", "advanced"):
+            if not row.get(level, "").strip():
+                raise SystemExit(f"{path}: paragraph {row['n']} has no {level} text")
+            row[level] = adapted_text(row[level])
+    if len(data["vocabulary"]["simple"]) > SIMPLE_SUPPORT_LIMIT:
+        raise SystemExit(f"{path}: Simple supports {len(data['vocabulary']['simple'])} words; the limit is {SIMPLE_SUPPORT_LIMIT}")
+    return data
+
+
+def apostrophe_variants(forms):
+    out = []
+    for form in forms:
+        out += [form, form.replace("'", "’"), form.replace("’", "'")]
+    return list(dict.fromkeys(out))
+
+
+def glossary_keys_for(text, entries=None, level=None):
     lower = loose_fold(text)
     keys = []
     for key, entry in (entries or GLOSSARY).items():
+        if level and level not in entry.get("levels", ()):
+            continue
         forms = [key] if isinstance(entry, tuple) else [entry["headword"], *(entry.get("forms") or [])]
         for form in forms:
             pattern = r"(?<!\w)" + re.escape(loose_fold(form)) + r"(?!\w)"
@@ -206,18 +210,81 @@ def sentence_objects(passages, prefix, source=""):
     ]
 
 
-def build_chapter(epub, chapter_path, chapter_id, chapter_number, title, records, volume_chapters, source_info):
+def build_glossary(adaptations, records, chapter_text, later_text):
+    glossary = {}
+    for key, (meaning, note) in GLOSSARY.items():
+        glossary[slug(key)] = {"headword": key, "meaning": meaning, "note": note, "levels": ["original"]}
+    enrich_glossary(glossary, records, chapter_text, later_text)
+    for key, forms in GLOSSARY_FORMS.items():
+        glossary[key]["forms"] = forms if key == "ecoutes" else list(dict.fromkeys(glossary[key]["forms"] + forms))
+
+    # Level vocabulary: a string reuses a source-text entry; an object defines a new one.
+    authored = {}
+    for level in ("simple", "advanced"):
+        for item in adaptations["vocabulary"][level]:
+            if isinstance(item, str):
+                key = slug(item)
+                if key not in glossary:
+                    raise SystemExit(f"{level} vocabulary: no glossary entry for {item!r}")
+            else:
+                key = slug(item["headword"])
+                if key not in glossary and key not in authored:
+                    authored[key] = {
+                        "headword": item["headword"], "meaning": item["meaning"], "note": item["note"],
+                        "levels": [], "authoredForms": [item["headword"], *item.get("forms", [])],
+                    }
+            entry = glossary.get(key) or authored[key]
+            if level not in entry["levels"]:
+                entry["levels"].append(level)
+    enrich_glossary(authored, records, chapter_text, later_text)
+    for entry in authored.values():
+        # Authored entries match only the forms written for them, never a lemma's whole family.
+        entry["forms"] = entry.pop("authoredForms")
+        if entry["headword"][:1].isupper():
+            entry["properNoun"], entry["classification"] = True, "ignore_or_gloss"
+    glossary.update(authored)
+    for entry in glossary.values():
+        entry["forms"] = apostrophe_variants(entry["forms"])
+        entry["levels"] = [level for level in LEVELS if level in entry["levels"]]
+    return glossary
+
+
+def build_chapter(epub, chapter_path, chapter_id, chapter_number, title, records, volume_chapters, source_info, adaptations):
     with zipfile.ZipFile(epub) as archive:
         source_html = archive.read(chapter_path).decode("utf-8")
 
     parser = ChapterParser()
     parser.feed(source_html)
+    rows = adaptations["paragraphs"]
+    levels = adaptations["levels"]
+
+    chapter_text = " ".join(parser.paragraphs)
+    later_text = " ".join(
+        paragraph
+        for number, _, paragraphs in volume_chapters
+        if number > chapter_number
+        for paragraph in paragraphs
+    )
+    glossary = build_glossary(adaptations, records, chapter_text, later_text)
 
     passages = []
     for index, paragraph in enumerate(parser.paragraphs, start=1):
         passage_id = f"{chapter_id}-p{index:03d}"
-        plain = plain_units(paragraph)
+        row = rows[index - 1]
         original = split_sentences(paragraph)
+        units = {
+            "simple": [row["simple"]],  # short sentences read better as one block
+            "advanced": split_sentences(row["advanced"]),
+            "original": original,
+        }
+        sources = {"simple": "authored-a2", "advanced": "authored-b2", "original": "original"}
+        representations = {}
+        for level in LEVELS:
+            representations[level] = {
+                **levels[level],
+                "sentences": sentence_objects(units[level], f"{passage_id}-{level}", sources[level]),
+                "vocabularyKeys": glossary_keys_for(" ".join(units[level]), glossary, level),
+            }
         passages.append({
             "id": passage_id,
             "sequence": index,
@@ -227,73 +294,33 @@ def build_chapter(epub, chapter_path, chapter_id, chapter_number, title, records
             "sourceEpub": str(epub),
             "sourceChapter": chapter_path,
             "sourceParagraph": index,
-            "sourceNote": "Generated from EPUB chapter HTML. Plain has first-pass vocabulary-guided substitutions and segmentation; it still needs reading review.",
-            "glossaryKeys": glossary_keys_for(paragraph),
-            "representations": {
-                "plain": {
-                    "label": "Plain",
-                    "level": "First-pass bridge",
-                    "description": "Some specialized words use simpler French. The story stays close to the original.",
-                    "sentences": sentence_objects(plain, f"{passage_id}-plain", "vocabulary-aware-first-pass"),
-                },
-                "guided": {
-                    "label": "Guided",
-                    "level": "B1/B2",
-                    "description": "Dumas's original French, with help on selected words.",
-                    "sentences": sentence_objects(original, f"{passage_id}-guided", "original"),
-                },
-                "original": {
-                    "label": "Original",
-                    "level": "B2/C1",
-                    "description": "Dumas's original French, without word highlighting.",
-                    "sentences": sentence_objects(original, f"{passage_id}-original", "original"),
-                },
-            },
+            "sourceNote": "Original is the EPUB chapter text. Simple (A2) and Advanced (B2) are authored rewrites from the chapter's adaptations file.",
+            "representations": representations,
             "originalComparison": original,
         })
 
-    glossary = {}
-    for key, (meaning, note) in GLOSSARY.items():
-        glossary[slug(key)] = {
-            "headword": key,
-            "meaning": meaning,
-            "note": note,
-        }
-
-    chapter_text = " ".join(parser.paragraphs)
-    later_text = " ".join(
-        paragraph
-        for number, _, paragraphs in volume_chapters
-        if number > chapter_number
-        for paragraph in paragraphs
-    )
-    enrich_glossary(glossary, records, chapter_text, later_text)
-    for key, forms in GLOSSARY_FORMS.items():
-        glossary[key]["forms"] = forms if key == "ecoutes" else list(dict.fromkeys(glossary[key]["forms"] + forms))
-    for passage in passages:
-        source_text = " ".join(passage["originalComparison"])
-        passage["glossaryKeys"] = glossary_keys_for(source_text, glossary)
-        passage["vocabularyKeys"] = passage["glossaryKeys"]
-
     return {
-        "schemaVersion": 2,
+        "schemaVersion": 3,
         "bookId": "monte-cristo",
         "chapterId": chapter_id,
         "chapterNumber": chapter_number,
         "title": title,
-        "status": "vocabulary-baseline-first-pass",
+        "status": "levels-a2-b2-original-first-pass",
         "nextChapterId": f"c{chapter_number + 1:02d}",
         "source": {
             "epub": str(epub),
             "file": chapter_path,
             "paragraphCount": len(parser.paragraphs),
+            "adaptations": f"{chapter_id}.adaptations.json",
         },
+        "levels": list(LEVELS),
         "processingNotes": [
-            "Original and guided retain the EPUB source text.",
-            "Plain uses reviewed first-pass substitutions for selected low-value nautical terms and still needs reading feedback.",
-            "Vocabulary decisions use recurrence in the 55-chapter available volume, not the complete novel.",
-            "CEFR and modern frequency are included only when their source tables supplied a match; missing values are not guessed.",
-            "Sentence translations are still blank; their scope will be decided after a fresh reading pass.",
+            "Original retains the EPUB source text.",
+            "Simple is an authored A2 retelling, paragraph by paragraph, with at most 20 supported words in the chapter.",
+            "Advanced is an authored B2 rewrite that keeps every event and line of dialogue.",
+            "Each level has its own vocabulary: representations carry vocabularyKeys and glossary entries list their levels.",
+            "Recurrence counts use the 55-chapter available volume, not the complete novel.",
+            "Sentence translations are blank.",
         ],
         "vocabularyAnalysis": source_info,
         "passages": passages,
@@ -314,6 +341,8 @@ def main():
     parser.add_argument("--out-vocabulary", type=Path, help="Defaults beside --out-json")
     parser.add_argument("--out-difficulty-map", type=Path, help="Defaults beside --out-json")
     parser.add_argument("--out-tokens", type=Path, help="Defaults beside --out-json")
+    parser.add_argument("--adaptations", type=Path, help="Authored Simple/Advanced text and vocabulary. Defaults beside --out-json")
+    parser.add_argument("--out-level-check", type=Path, help="Defaults beside --out-json")
     args = parser.parse_args()
 
     chapter_number = int(args.chapter_id.removeprefix("c"))
@@ -334,9 +363,29 @@ def main():
         "vocabularyFile": f"{args.chapter_id}.vocabulary.json",
         "difficultyMapFile": f"{args.chapter_id}.difficulty-map.json",
         "tokensFile": f"{args.chapter_id}.tokens.json",
+        "levelCheckFile": f"{args.chapter_id}.level-check.json",
     }
-    chapter = build_chapter(Path(args.epub), args.chapter_path, args.chapter_id, chapter_number, args.title, records, volume_chapters, source_info)
     out_json = Path(args.out_json)
+    adaptations_path = args.adaptations or out_json.with_name(f"{args.chapter_id}.adaptations.json")
+    adaptations = load_adaptations(adaptations_path, len(chapter_paragraphs))
+    chapter = build_chapter(Path(args.epub), args.chapter_path, args.chapter_id, chapter_number, args.title, records, volume_chapters, source_info, adaptations)
+
+    # Check each authored level against its CEFR target (FLELex), outside its supported words.
+    form_lemmas = load_lexique_forms(args.lexique)
+    checks = {}
+    for level in ("simple", "advanced"):
+        supported = [
+            form for entry in chapter["glossary"].values() if level in entry["levels"]
+            for form in [entry["headword"], *entry["forms"]]
+        ]
+        checks[level] = level_check(
+            [row[level] for row in adaptations["paragraphs"]], nlp, flelex,
+            adaptations["levels"][level]["level"], supported, adaptations.get("transparentWords", ()), form_lemmas,
+        )
+        checks[level]["supportedWords"] = sum(1 for entry in chapter["glossary"].values() if level in entry["levels"])
+        print(f"{level}: {checks[level]['words']} words, {checks[level]['supportedWords']} supported, "
+              f"{len(checks[level]['aboveTarget'])} above {checks[level]['target']}, {len(checks[level]['unmatched'])} unmatched")
+    out_level_check = args.out_level_check or out_json.with_name(f"{args.chapter_id}.level-check.json")
     out_js = Path(args.out_js)
     out_vocabulary = args.out_vocabulary or out_json.with_name(f"{args.chapter_id}.vocabulary.json")
     out_difficulty_map = args.out_difficulty_map or out_json.with_name(f"{args.chapter_id}.difficulty-map.json")
@@ -350,6 +399,7 @@ def main():
     out_js.write_text("window.MultiReadChapter = " + json.dumps(chapter, ensure_ascii=False, indent=2) + ";\n", encoding="utf-8")
     out_vocabulary.write_text(json.dumps({"source": source_info, "records": records}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     out_difficulty_map.write_text(json.dumps(difficulty_map(records), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    out_level_check.write_text(json.dumps(checks, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     out_tokens.write_text(json.dumps({"chapterId": args.chapter_id, "tokens": tokens}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 

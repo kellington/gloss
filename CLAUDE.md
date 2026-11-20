@@ -187,7 +187,7 @@ Processed chapter data lives in `data/monte-cristo/`: each chapter has canonical
 
 ### Key flows
 
-1. Choose a passage representation: plain, guided, or original.
+1. Choose a passage level: Simple (A2), Advanced (B2), or Original.
 2. Tap highlighted words for contextual help.
 3. Show sentence meaning when the French blocks comprehension.
 4. Compare against the original source text.

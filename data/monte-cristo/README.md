@@ -1,11 +1,16 @@
 # Chapter data and lexical sources
 
 `c01.json` is the static reader input. `c01.js` is the file-mode wrapper.
+`c01.adaptations.json` is the authored source for the Simple (A2) and Advanced
+(B2) levels: one text per source paragraph plus each level's word list, written
+to `scripts/adaptation-brief.md`. `c01.level-check.json` lists any word in
+those texts that FLELex places above the level's target and that is not in its
+word list.
 `c01.tokens.json` contains the token-level surface forms, lemmas, parts of
 speech, and passage offsets. `c01.vocabulary.json` contains the Chapter 1
 lemma/POS records and source coverage. `c01.difficulty-map.json` records the first-pass classification
 rules and candidates. These are processing artifacts, not claims that every
-candidate has already been rewritten in Plain mode.
+candidate has been rewritten.
 
 The recurrence counts cover the 55 chapters in the French EPUB checked into
 `Books/`, not the complete *Le Comte de Monte-Cristo*. `futureFrequency` means
@@ -23,6 +28,6 @@ Pallier, Schalchli, Bourgin and Gimenes, licensed
 tables are downloaded locally to `data/lexical-sources/`, which is ignored by
 Git. Missing joins remain null in the generated chapter data.
 
-The word definitions and selected Plain substitutions are project-curated.
+The word definitions and the Simple and Advanced texts are project-authored.
 The generated classifications are suggestions for review, not proficiency
 assessments or a full literary simplification.

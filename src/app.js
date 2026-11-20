@@ -1,7 +1,8 @@
 const STORAGE_KEY = "multi-read-v0.1";
 const CHAPTER_URL = "data/monte-cristo/c01.json";
 const CHAPTER_WRAPPER_URL = "data/monte-cristo/c01.js";
-const difficultyOrder = ["plain", "guided", "original"];
+const STATE_VERSION = 2; // 2: levels became simple / advanced / original; older saved state is discarded
+const difficultyOrder = ["simple", "advanced", "original"];
 
 let activeChapter = null;
 let glossary = {};
@@ -48,7 +49,8 @@ loadChapter().then((chapter) => {
 
 function defaultState() {
   return {
-    mode: "guided",
+    version: STATE_VERSION,
+    mode: "simple",
     passageIndex: 0,
     events: [],
     translationsOpen: [],
@@ -59,7 +61,9 @@ function defaultState() {
 
 function loadState() {
   try {
-    return { ...defaultState(), ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (saved?.version !== STATE_VERSION) return defaultState();
+    return { ...defaultState(), ...saved };
   } catch {
     return defaultState();
   }
@@ -153,7 +157,11 @@ async function pullRemote() {
     if (!response.ok) return;
     const remote = await response.json();
     const meta = readSyncMeta();
-    if (remote.state && remote.updatedAt > meta.updatedAt) {
+    if (remote.state && remote.state.version !== STATE_VERSION) {
+      // Stored progress predates the current levels: replace it with this device's fresh state.
+      writeSyncMeta({ updatedAt: Date.now(), dirty: true });
+      await pushLocal();
+    } else if (remote.state && remote.updatedAt > meta.updatedAt) {
       adoptRemote(remote);
     } else if (meta.dirty) {
       await pushLocal();
@@ -182,7 +190,7 @@ async function pushLocal({ keepalive = false } = {}) {
     if (readSyncMeta().updatedAt !== meta.updatedAt) return; // edited while in flight; next push covers it
     if (remote.applied) {
       writeSyncMeta({ updatedAt: meta.updatedAt, dirty: false });
-    } else if (remote.state && remote.updatedAt > meta.updatedAt) {
+    } else if (remote.state?.version === STATE_VERSION && remote.updatedAt > meta.updatedAt) {
       adoptRemote(remote); // another device wrote later
     }
   } catch {
@@ -192,7 +200,7 @@ async function pushLocal({ keepalive = false } = {}) {
 
 function adoptRemote(remote) {
   const next = { ...defaultState(), ...remote.state };
-  if (!difficultyOrder.includes(next.mode)) next.mode = "guided";
+  if (!difficultyOrder.includes(next.mode)) next.mode = "simple";
   if (!Number.isInteger(next.passageIndex) || next.passageIndex < 0) next.passageIndex = 0;
   if (!Array.isArray(next.events)) next.events = [];
   if (!Array.isArray(next.translationsOpen)) next.translationsOpen = [];
@@ -239,9 +247,9 @@ function recordEvent(type, payload = {}) {
   renderModel();
 }
 
-function tokenize(text, passage) {
+function tokenize(text, keys) {
   const terms = new Map();
-  for (const key of passage.vocabularyKeys ?? passage.glossaryKeys ?? []) {
+  for (const key of keys) {
     const entry = glossary[key];
     if (!entry) continue;
     for (const form of [entry.headword, ...(entry.forms ?? [])]) {
@@ -291,7 +299,7 @@ function render() {
     const isOpen = state.translationsOpen.includes(sentence.id);
     const hasTranslation = Boolean(sentence.translation);
     return `<article class="sentence" data-sentence="${sentence.id}">
-      <p>${state.mode === "original" ? escapeHtml(sentence.text) : tokenize(sentence.text, passage)}</p>
+      <p>${state.mode === "original" ? escapeHtml(sentence.text) : tokenize(sentence.text, current.vocabularyKeys ?? [])}</p>
       ${hasTranslation ? `<div class="sentence-actions">
         <button class="text-button translation-toggle" type="button" data-sentence="${sentence.id}">
           ${isOpen ? "Hide meaning" : "Show meaning"}
@@ -305,18 +313,14 @@ function render() {
   els.comparison.hidden = !state.compareOpen;
   els.comparisonText.innerHTML = passage.originalComparison.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
 
-  const priority = { teach: 0, simplify: 1, ignore_or_gloss: 2 };
-  const focus = (passage.vocabularyKeys ?? [])
-    .filter((key) => priority[glossary[key]?.classification] != null)
-    .sort((a, b) => priority[glossary[a].classification] - priority[glossary[b].classification])
-    .slice(0, 8);
+  // Each level has its own vocabulary: the words that need support in this text.
+  const focus = current.vocabularyKeys ?? [];
   els.vocabularyFocus.innerHTML = focus.length
     ? focus.map((key) => {
       const entry = glossary[key];
-      const label = { teach: "Learn", simplify: "Eased in Plain", ignore_or_gloss: "Light gloss" }[entry.classification];
-      return `<button type="button" data-key="${escapeHtml(key)}" data-classification="${escapeHtml(entry.classification)}">${escapeHtml(entry.headword)}<span>${label}</span></button>`;
+      return `<button type="button" data-key="${escapeHtml(key)}" data-classification="${escapeHtml(entry.classification ?? "keep")}">${escapeHtml(entry.headword)}<span>${vocabularyLabel(entry)}</span></button>`;
     }).join("")
-    : "<p>No extra vocabulary guidance in this passage.</p>";
+    : "<p>No words need support in this passage.</p>";
 
   bindInteractions();
   renderHelp();
@@ -367,6 +371,12 @@ function bindInteractions() {
   });
 }
 
+function vocabularyLabel(entry) {
+  if (entry.properNoun) return "Name";
+  if (entry.classification === "teach") return "Learn";
+  return "Definition";
+}
+
 function renderHelp() {
   const entry = glossary[state.currentHelp];
 
@@ -381,13 +391,11 @@ function renderHelp() {
   els.helpTitle.textContent = entry.headword;
   els.helpBody.textContent = entry.meaning;
   els.helpNote.textContent = entry.note;
-  const treatment = {
-    teach: "Learn this: it is useful later in this volume.",
-    simplify: "Plain mode can ease this lower-priority difficulty.",
-    ignore_or_gloss: "Light gloss: understand it here without memorizing it."
-  }[entry.classification] ?? "";
+  const treatment = entry.properNoun
+    ? "Name: know who or what it is."
+    : entry.classification === "teach" ? "Learn this: it returns later in this volume." : "";
   const recurrence = entry.futureFrequency == null ? "" : ` ${entry.futureFrequency} later occurrence${entry.futureFrequency === 1 ? "" : "s"} in the available volume.`;
-  els.helpAnalysis.textContent = `${treatment}${recurrence} ${entry.reason ?? ""}`.trim();
+  els.helpAnalysis.textContent = `${treatment}${recurrence}`.trim();
 }
 
 function renderModel() {
@@ -453,7 +461,7 @@ function formatEvent(event) {
   const time = new Date(event.at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   if (event.type === "lookup") return `${time}: looked up ${glossary[event.payload.key]?.headword ?? event.payload.key}`;
   if (event.type === "translation") return `${time}: opened sentence meaning`;
-  if (event.type === "mode_change") return `${time}: changed to ${passage.representations[event.payload.mode].label}`;
+  if (event.type === "mode_change") return `${time}: changed to ${passage.representations[event.payload.mode]?.label ?? event.payload.mode}`;
   if (event.type === "passage_change") return `${time}: moved to passage ${event.payload.passageIndex + 1}`;
   return `${time}: ${event.type}`;
 }

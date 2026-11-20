@@ -1,0 +1,29 @@
+{
+  "simple": {
+    "target": "A2",
+    "words": 2216,
+    "supportedOccurrences": 110,
+    "aboveTarget": [],
+    "unmatched": [],
+    "supportedWords": 20
+  },
+  "advanced": {
+    "target": "B2",
+    "words": 3113,
+    "supportedOccurrences": 159,
+    "aboveTarget": [
+      {
+        "word": "ardents",
+        "level": "C2",
+        "count": 1
+      }
+    ],
+    "unmatched": [
+      {
+        "word": "berne",
+        "count": 1
+      }
+    ],
+    "supportedWords": 83
+  }
+}
