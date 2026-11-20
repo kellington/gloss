@@ -13,20 +13,21 @@ is the real record. Don't let this file become the project's second STATE.md.
 
 Actively being worked on right now.
 
-- [ ] Read Chapter 1 in the hosted app (`gloss.minus1over12.com`) and collect app, vocabulary, and schema ideas for Chapter 2 in `project/ideas/feedback-c01.md`.
+- [ ] Read Chapter 1 at the new levels (Simple, Advanced, Original) in the hosted app and note what is off in `project/ideas/feedback-c01.md`.
 
 ## Next
 
 The next handful, ordered.
 
-- [ ] Review the reading notes, then revise the app, vocabulary rules, or chapter schema; decide whether and when to generate sentence meanings.
-- [ ] Process Chapter 2 into `data/monte-cristo/c02.json` and `c02.js` using the reviewed rules.
+- [ ] Review the reading notes; revise `c01.adaptations.json` and `scripts/adaptation-brief.md`; confirm the paragraph 24 reading.
+- [ ] Author `c02.adaptations.json` to the brief and process Chapter 2 into `data/monte-cristo/c02.json` and `c02.js`.
+- [ ] Milestone checkpoint: rewrite PLAN.md and reconcile PROJECT.md with the new levels and the live D1 setup.
+- [ ] Decide whether the reader should show several paragraphs per screen.
 
 ## Later
 
 Small near-term ideas that don't deserve an issue yet.
 
-- [ ] Add optional LLM-backed transformations behind the chapter processor.
 - [ ] Add an in-app chapter picker once more than one chapter is processed.
 - [ ] Optional: wire Workers Builds (deploy on push to `main`) — separate gate card.
 - [ ] Add a small smoke-test checklist or browser test for file-mode reader interactions.
@@ -35,6 +36,7 @@ Small near-term ideas that don't deserve an issue yet.
 
 Cleared at each milestone.
 
+- [x] Replace Plain/Guided with Simple (A2) and Advanced (B2); rebuild Chapter 1; deploy and merge (2026-11-20, PR #5).
 - [x] Deploy Gates 1–7: Gloss live at `gloss.minus1over12.com` with Mac ↔ iPhone sync and offline reading (2026-10-16).
 - [x] Recreate `.venv` after the folder rename (2026-10-16).
 - [x] Replace starter project docs with Multi-Read product docs.
