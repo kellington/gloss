@@ -60,3 +60,10 @@ writing a design doc, which belongs elsewhere.
 **Why:** The deployed Worker should match a commit on the default branch; the branch was already fully merged (PR #3).
 **Trade-off:** Deploys stay manual (no Workers Builds), so each one needs Rob's go-ahead and a git-status check.
 **Impact:** Vault-dashboard URL is dev/fallback only. Access app `gloss` / policy `lecteurs` and D1 `gloss` (WNAM) are the production resources.
+
+## [2026-11-20] — Levels are Simple (A2), Advanced (B2) and Original
+
+**Decision:** Replace the Plain and Guided modes with two authored rewrites: Simple, the most basic version of the story in A2 French with at most 20 supported words per chapter, and Advanced, the full chapter in B2 French. Original stays as is. Each level has its own vocabulary list.
+**Why:** Rob found Plain and Guided too close to each other and to the original. Plain was the source text with a few substitutions; Guided was the source text with highlights.
+**Trade-off:** The two levels are written per chapter by Claude in a session (no API billing) to `scripts/adaptation-brief.md`, so each new chapter needs an authoring pass, and quality rests on that pass plus a FLELex word-level check. Simple cuts description and detail, so it is no longer Dumas's prose.
+**Impact:** Chapter data is schema v3 with `cNN.adaptations.json` as authored source. The teach / simplify / light-gloss rules no longer drive the text. Saved reading state from the old levels is discarded (state version 2). PLAN.md and PROJECT.md still describe the old modes until the next milestone checkpoint.

@@ -1,34 +1,33 @@
 # State
 
-*Last updated: 2026-10-17*
+*Last updated: 2026-11-20*
 
 ## Summary
 
-Multi-Read has a vocabulary-aware first-pass Chapter 1 baseline. The processor analyzes the 55 chapters in the available French volume with spaCy, joins FLELex learner levels and Lexique modern frequencies, and generates vocabulary records, a difficulty map, and rebuilt chapter JSON. The reader uses curated vocabulary decisions in contextual help and eases selected low-value terms in Plain mode. The learner is starting a fresh Chapter 1 reading pass to collect improvements for Chapter 2. Renamed **Gloss** (2026-10-12). **Live since 2026-10-16** at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA): all deploy Gates 1–7 passed and Rob confirmed Mac ↔ iPhone sync, home-screen app and offline reading. Deploys come from `main`.
+Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA). On 2026-11-19/20 the three reading levels were replaced: **Simple (A2)**, **Advanced (B2)** and **Original** (DECISIONS 2026-11-20). Chapter 1 is rebuilt with authored A2 and B2 text for all 141 paragraphs and a separate vocabulary list per level. Saved progress from the old levels is discarded; Rob is restarting the book from passage 1. Deployed 2026-11-20 (Worker version `5b8124c8…`), merged to `main` in PR #5; Rob confirmed it looks good on the hosted site.
 
 ## What's working
 
-- Hosted app `https://gloss.minus1over12.com/` behind Access (policy `lecteurs`); D1 `gloss` (WNAM) holds learner state; Worker version `a810be38…` from `main` fcf3d48.
-- Static browser app in `index.html`, `src/app.js`, and `src/styles.css`.
-- Vocabulary-aware Chapter 1 data in `data/monte-cristo/c01.json`; `c01.js` remains optional for file-mode fallback.
-- Reproducible processing in `scripts/process_chapter.py` and `scripts/vocabulary.py`; `c01.vocabulary.json` and `c01.difficulty-map.json` expose the analysis.
-- Reader modes: Plain eases selected terms and separates some long units, Guided keeps original wording with vocabulary buttons, and Original presents unmarked source text.
-- Feedback scratch file in `project/ideas/feedback-c01.md`.
-- Extracted cover image at `assets/monte-cristo-cover.jpg`.
-- Product docs in `PROJECT.md`, `PLAN.md`, and `README.md` are no longer starter templates.
-- The actual French source EPUB path is identified in docs and sample data.
+- Hosted app `https://gloss.minus1over12.com/` behind Access (policy `lecteurs`); D1 `gloss` (WNAM) holds learner state; Worker version `5b8124c8…` = `main` 879c311.
+- Static browser app in `index.html`, `src/app.js`, and `src/styles.css`. Levels: Simple (A2, highlighted), Advanced (B2, highlighted), Original (unmarked). Sidebar vocabulary and word help follow the level; labels are Learn / Definition / Name.
+- Chapter 1 data in `data/monte-cristo/c01.json` (schema v3). Authored source is `c01.adaptations.json`; the authoring prompt is `scripts/adaptation-brief.md`.
+- `scripts/process_chapter.py` merges the adaptations with the EPUB text, enforces the 20-word Simple cap and writes `c01.level-check.json` (FLELex check per level). Result: Simple 0 words above A2 outside its 20 supported words; Advanced 1 flagged word, inside a glossed idiom.
+- Learner state has a version (`STATE_VERSION = 2` in `src/app.js`); older saved state, local or in D1, is replaced with a fresh one.
+- Feedback scratch file in `project/ideas/feedback-c01.md`; level notes in `data/monte-cristo/c01.simplification-notes.md`.
 
 ## In progress
 
-- The learner's fresh Chapter 1 reading and feedback pass, now in the hosted app, in `project/ideas/feedback-c01.md`. Capture app, vocabulary, and schema ideas for Chapter 2, then review them before processing C02.
+- Rob's fresh read of Chapter 1 at the new levels in the hosted app. Collect notes in `project/ideas/feedback-c01.md`, then revise `c01.adaptations.json` or the brief before authoring Chapter 2.
 
 ## Known issues
 
-- The learner model is intentionally naive: lookup and translation counts are rough friction signals, not a real proficiency estimate.
-- Plain mode has selected curated substitutions but is not a reviewed B1 simplification; many passages still retain literary syntax.
-- Automatic lemmas, proper names, lexical joins, and classification rules can be wrong, especially with OCR and historical French. Reader meanings are curated for a subset of Chapter 1 terms rather than generated for every lemma.
-- Frequency counts cover the 55-chapter available volume, not the entire novel.
-- Sentence translations are not generated in Chapter 1 schema v2; the reader hides `Show meaning` when no translation exists.
+- Simple and Advanced are authored by Claude in-session and checked only against a word list (FLELex). Grammar level and readability have not been reviewed by Rob or a French teacher.
+- Paragraph 24 (*ne point escompter pour 25,000 francs de bénéfice*) is read as "worth more than 25,000 francs"; unconfirmed.
+- The reader pages one paragraph at a time (141 passages in Chapter 1).
+- The learner model is naive: lookup and translation counts are rough friction signals.
+- Frequency counts cover the 55-chapter available volume, not the entire novel. `c01.difficulty-map.json` still describes the old B1-ish teach/simplify rules.
+- No sentence translations; the reader hides `Show meaning`.
+- The installed iPhone app was not tested after the 2026-11-20 deploy.
 
 ## Business snapshot
 
@@ -46,24 +45,15 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 
 ## Open questions
 
-- Whether sentence meaning support should be generated for every sentence or only where a reader needs it.
-- How much simplification is acceptable before a passage stops feeling like Dumas.
-- How much vocabulary guidance is helpful before highlighting becomes distracting.
-- What the fresh Chapter 1 reading pass will reveal before C02.
-- PLAN.md still shows the three vocabulary-analysis and integration criteria unchecked, although the baseline is implemented. Reconcile the checklist when the current milestone is closed.
-- PROJECT.md Non-Goals ("sync, or cloud infrastructure", "storing personal learning data outside the browser") contradict the live D1 sync (DECISIONS 2026-10-12). Which is right? Asked in STATUS-SUMMARY.
+- Does Simple read without difficulty, and is Advanced clearly between Simple and Dumas? (Rob's reading pass.)
+- Should the reader show more than one paragraph per screen?
+- Are sentence meanings still wanted now that Simple exists?
+- PLAN.md drift: the v0.1 milestone and its Definition of Done still describe plain / guided / original and a B1-ish target; three built items are unchecked. Needs the milestone checkpoint.
+- PROJECT.md drift: success criteria name plain, guided and original; Non-Goals exclude sync and cloud infrastructure, contradicting the live D1 setup (DECISIONS 2026-10-12). Asked in STATUS-SUMMARY.
+- The 2026-11-20 deploy ran from `vscode` before the merge, against "deploy from a clean `main`" (DECISIONS 2026-10-16). `main` now matches. Keep the rule, or allow deploy-then-merge?
 
 ## Resolved this session
 
-- 2026-10-17 (unattended refresh): no open handoffs for gloss; status page `project/status/status-2026-10-17.html` and STATUS-SUMMARY refreshed (name/tagline now Gloss).
-- 2026-10-16: Deploy Gates 1–7 passed; Gloss live with sync. `VScode-&-Codex` was already merged (PR #3); work moved to `main`, pushed fcf3d48, branch deleted locally and on origin. `.venv` recreated. GATES.md has a run log with the as-built Access names.
-- 2026-10-13: Closed handoffs H-20261013-01/02. Removed `Rob/multi-read` symlink; dev URL references now `/gloss/`; dropped duplicate Next Prompt supplement from CLAUDE.md (gloss 95f8c04, Portfolio c87025a).
-
-- 2026-10-06: Configured the repo for the global `/project-status` skill (`## Project status` block in CLAUDE.md with `extra_sources` and `never_read`). Generated the first status page, `project/status/status-2026-10-06.html`, plus `STATUS-SUMMARY.md`.
-- Renamed `project/ideas/feeback-c01.md` → `feedback-c01.md` and updated every reference.
-- First reading notes are in `feedback-c01.md`: unknown words left unhighlighted in Plain mode (gréé, arrimé), unclear "Eased in Plain" / "Light Gloss" labels, and positive notes on the word-usage guidance.
-
----
-
-*Updated at the end of every session by `/end-session`. This is the file the
-agent reads first next session — if it's stale, everything downstream is wrong.*
+- 2026-11-20: Levels replaced with Simple (A2) / Advanced (B2) / Original; Chapter 1 rebuilt; reader and processor updated (879c311). Deployed, then pushed and merged to `main` (PR #5) on Rob's instruction.
+- 2026-11-20: The feedback items on unclear "Eased in Plain" / "Light gloss" labels and unhighlighted *gréé* / *arrimé* are addressed.
+- 2026-10-17 (unattended refresh): status page and STATUS-SUMMARY refreshed; merged in PR #4.
