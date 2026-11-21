@@ -19,6 +19,7 @@ Actively being worked on right now.
 
 The next handful, ordered.
 
+- [ ] Make word-help colours follow the labels (green Learn, grey Definition, blue Name), on Rob's OK.
 - [ ] Review the reading notes; revise `c01.adaptations.json` and `scripts/adaptation-brief.md`; confirm the paragraph 24 reading.
 - [ ] Author `c02.adaptations.json` to the brief and process Chapter 2 into `data/monte-cristo/c02.json` and `c02.js`.
 - [ ] Milestone checkpoint: rewrite PLAN.md and reconcile PROJECT.md with the new levels and the live D1 setup.
@@ -36,6 +37,7 @@ Small near-term ideas that don't deserve an issue yet.
 
 Cleared at each milestone.
 
+- [x] Reader layout: side-by-side compare, compact level buttons, chapter/passage heading, Previous / Next under the text (2026-11-21, PR #7).
 - [x] Replace Plain/Guided with Simple (A2) and Advanced (B2); rebuild Chapter 1; deploy and merge (2026-11-20, PR #5).
 - [x] Deploy Gates 1–7: Gloss live at `gloss.minus1over12.com` with Mac ↔ iPhone sync and offline reading (2026-10-16).
 - [x] Recreate `.venv` after the folder rename (2026-10-16).
