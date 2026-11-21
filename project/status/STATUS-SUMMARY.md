@@ -16,6 +16,9 @@ questions_for_rob:
   - question: "After reading Chapter 1 at the new levels: is Simple easy enough and Advanced hard enough, and is the paragraph 24 reading ('worth more than 25,000 francs') right?"
     blocks: "Chapter 2 can't be authored until the Chapter 1 levels and the adaptation brief are confirmed."
     asked: 2026-11-20
+  - question: "Make word-help colours follow the labels (green = Learn, grey = Definition, blue = Name)? Today's colours are left over from the old modes."
+    blocks: "Colours in the text and sidebar stay inconsistent with the labels."
+    asked: 2026-11-21
   - question: "The 2026-11-20 deploy ran from vscode before the merge to main. Keep 'deploy only from a clean main', or allow deploy-then-merge?"
     blocks: "Nothing today; decides how the next deploy is run."
     asked: 2026-11-20

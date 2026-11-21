@@ -1,18 +1,19 @@
 # State
 
-*Last updated: 2026-11-20*
+*Last updated: 2026-11-21*
 
 ## Summary
 
-Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA). On 2026-11-19/20 the three reading levels were replaced: **Simple (A2)**, **Advanced (B2)** and **Original** (DECISIONS 2026-11-20). Chapter 1 is rebuilt with authored A2 and B2 text for all 141 paragraphs and a separate vocabulary list per level. Saved progress from the old levels is discarded; Rob is restarting the book from passage 1. Deployed 2026-11-20 (Worker version `5b8124c8…`), merged to `main` in PR #5; Rob confirmed it looks good on the hosted site.
+Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA). On 2026-11-19/20 the three reading levels were replaced: **Simple (A2)**, **Advanced (B2)** and **Original** (DECISIONS 2026-11-20). Chapter 1 is rebuilt with authored A2 and B2 text for all 141 paragraphs and a separate vocabulary list per level. Saved progress from the old levels is discarded; Rob is restarting the book from passage 1. Deployed 2026-11-20 and merged in PR #5; Rob confirmed it looks good on the hosted site. On 2026-11-21 the reader layout was reworked (PR #7) and redeployed from `main` (Worker version `6dfe2b60…`).
 
 ## What's working
 
-- Hosted app `https://gloss.minus1over12.com/` behind Access (policy `lecteurs`); D1 `gloss` (WNAM) holds learner state; Worker version `5b8124c8…` = `main` 879c311.
+- Hosted app `https://gloss.minus1over12.com/` behind Access (policy `lecteurs`); D1 `gloss` (WNAM) holds learner state; Worker version `6dfe2b60…` = `main` d5a4267.
 - Static browser app in `index.html`, `src/app.js`, and `src/styles.css`. Levels: Simple (A2, highlighted), Advanced (B2, highlighted), Original (unmarked). Sidebar vocabulary and word help follow the level; labels are Learn / Definition / Name.
 - Chapter 1 data in `data/monte-cristo/c01.json` (schema v3). Authored source is `c01.adaptations.json`; the authoring prompt is `scripts/adaptation-brief.md`.
 - `scripts/process_chapter.py` merges the adaptations with the EPUB text, enforces the 20-word Simple cap and writes `c01.level-check.json` (FLELex check per level). Result: Simple 0 words above A2 outside its 20 supported words; Advanced 1 flagged word, inside a glossed idiom.
 - Learner state has a version (`STATE_VERSION = 2` in `src/app.js`); older saved state, local or in D1, is replaced with a fresh one.
+- Reader layout: compact one-row level buttons on the phone; heading "Chapter N. Passage X of Y"; Previous / Next side by side under the text, returning the view to the heading; Compare original shows the source beside the passage on wide screens (1100px and up) and under it on narrow ones, and is hidden in Original.
 - Feedback scratch file in `project/ideas/feedback-c01.md`; level notes in `data/monte-cristo/c01.simplification-notes.md`.
 
 ## In progress
@@ -24,6 +25,8 @@ Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Acc
 - Simple and Advanced are authored by Claude in-session and checked only against a word list (FLELex). Grammar level and readability have not been reviewed by Rob or a French teacher.
 - Paragraph 24 (*ne point escompter pour 25,000 francs de bénéfice*) is read as "worth more than 25,000 francs"; unconfirmed.
 - The reader pages one paragraph at a time (141 passages in Chapter 1).
+- Word-help colours are a leftover of the old teach / simplify / light-gloss classes and do not match the Learn / Definition / Name labels. Proposed: green = Learn, grey = Definition, blue = Name; waiting on Rob.
+- The 2026-11-21 layout was checked at phone width in a desktop browser, not on the iPhone.
 - The learner model is naive: lookup and translation counts are rough friction signals.
 - Frequency counts cover the 55-chapter available volume, not the entire novel. `c01.difficulty-map.json` still describes the old B1-ish teach/simplify rules.
 - No sentence translations; the reader hides `Show meaning`.
@@ -47,6 +50,7 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 
 - Does Simple read without difficulty, and is Advanced clearly between Simple and Dumas? (Rob's reading pass.)
 - Should the reader show more than one paragraph per screen?
+- Drop the "Chapter 1 is ready for a fresh read…" line under the heading to save room?
 - Are sentence meanings still wanted now that Simple exists?
 - PLAN.md drift: the v0.1 milestone and its Definition of Done still describe plain / guided / original and a B1-ish target; three built items are unchecked. Needs the milestone checkpoint.
 - PROJECT.md drift: success criteria name plain, guided and original; Non-Goals exclude sync and cloud infrastructure, contradicting the live D1 setup (DECISIONS 2026-10-12). Asked in STATUS-SUMMARY.
@@ -54,6 +58,7 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 
 ## Resolved this session
 
+- 2026-11-21: Compare original fixed (it rendered off-screen and looked dead); level buttons, heading and Previous / Next reworked (9dec207, PR #7); deployed from `main`.
 - 2026-11-20: Levels replaced with Simple (A2) / Advanced (B2) / Original; Chapter 1 rebuilt; reader and processor updated (879c311). Deployed, then pushed and merged to `main` (PR #5) on Rob's instruction.
 - 2026-11-20: The feedback items on unclear "Eased in Plain" / "Light gloss" labels and unhighlighted *gréé* / *arrimé* are addressed.
 - 2026-10-17 (unattended refresh): status page and STATUS-SUMMARY refreshed; merged in PR #4.
