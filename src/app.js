@@ -281,7 +281,7 @@ function render() {
   els.sourceMeta.textContent = `${passage.author} · French source text`;
   els.previousPassage.disabled = state.passageIndex === 0;
   els.nextPassage.disabled = state.passageIndex === passages.length - 1;
-  els.passageProgress.textContent = `Passage ${state.passageIndex + 1} of ${passages.length}`;
+  els.passageProgress.textContent = `Chapter ${activeChapter.chapterNumber}. Passage ${state.passageIndex + 1} of ${passages.length}`;
   els.chapterStatus.textContent = state.passageIndex === passages.length - 1
     ? `End of Chapter ${activeChapter.chapterNumber}. Capture feedback before moving on.`
     : `Chapter ${activeChapter.chapterNumber} is ready for a fresh read. Notice where wording or word help feels off.`;
@@ -309,8 +309,13 @@ function render() {
     </article>`;
   }).join("");
 
+  // Comparing only makes sense for the rewritten levels; Original is the source itself.
+  const canCompare = state.mode !== "original";
+  const comparing = canCompare && state.compareOpen;
+  els.compareToggle.closest(".toggle-row").hidden = !canCompare;
   els.compareToggle.checked = state.compareOpen;
-  els.comparison.hidden = !state.compareOpen;
+  els.comparison.hidden = !comparing;
+  els.comparison.parentElement.classList.toggle("is-comparing", comparing);
   els.comparisonText.innerHTML = passage.originalComparison.map((line) => `<p>${escapeHtml(line)}</p>`).join("");
 
   // Each level has its own vocabulary: the words that need support in this text.
@@ -485,6 +490,7 @@ els.compareToggle.addEventListener("change", () => {
   recordEvent("compare_toggle", { visible: state.compareOpen });
   saveState();
   render();
+  if (state.compareOpen) els.comparison.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
 els.previousPassage.addEventListener("click", () => {
@@ -495,6 +501,7 @@ els.previousPassage.addEventListener("click", () => {
   recordEvent("passage_change", { passageIndex: state.passageIndex });
   saveState();
   render();
+  els.passageProgress.scrollIntoView({ block: "start" });
 });
 
 els.nextPassage.addEventListener("click", () => {
@@ -505,6 +512,7 @@ els.nextPassage.addEventListener("click", () => {
   recordEvent("passage_change", { passageIndex: state.passageIndex });
   saveState();
   render();
+  els.passageProgress.scrollIntoView({ block: "start" });
 });
 
 els.resetButton.addEventListener("click", () => {

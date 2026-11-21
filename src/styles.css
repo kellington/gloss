@@ -138,9 +138,11 @@ h1 {
 }
 
 .mode-button {
-  min-width: 112px;
-  min-height: 56px;
-  padding: 8px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  min-height: 38px;
+  padding: 6px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   color: var(--ink);
@@ -154,17 +156,11 @@ h1 {
   background: var(--accent);
 }
 
-.mode-button span,
-.mode-button small {
-  display: block;
-}
-
 .mode-button span {
   font-weight: 750;
 }
 
 .mode-button small {
-  margin-top: 3px;
   opacity: 0.8;
 }
 
@@ -178,10 +174,9 @@ h1 {
 
 .passage-nav {
   display: grid;
-  grid-template-columns: minmax(98px, auto) 1fr minmax(98px, auto);
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  align-items: center;
-  margin-bottom: 18px;
+  margin-top: 14px;
 }
 
 .nav-button {
@@ -198,15 +193,16 @@ h1 {
   opacity: 0.45;
 }
 
-.passage-progress {
-  color: var(--muted);
+.passage-title {
+  margin: 0 0 6px;
+  padding-top: 10px; /* breathing room when scrolled to the top after Next */
+  font-size: 1.15rem;
   font-weight: 750;
-  text-align: center;
 }
 
 .chapter-status {
   min-height: 1.4em;
-  margin: -6px 0 18px;
+  margin: 0 0 14px;
   color: var(--muted);
   font-size: 0.92rem;
   line-height: 1.4;
@@ -298,6 +294,32 @@ h1 {
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Wide screens: the original sits beside the passage instead of below it. */
+@media (min-width: 1100px) {
+  .reader-card.is-comparing {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .reader-card.is-comparing .comparison {
+    margin-top: 0;
+    padding-top: 0;
+    padding-left: 28px;
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+
+  .reader-card.is-comparing .passage-text {
+    font-size: 1.15rem;
+  }
 }
 
 .comparison h2,
@@ -481,16 +503,32 @@ h1 {
     margin-top: 18px;
   }
 
-  .toolbar,
-  .mode-buttons,
-  .passage-nav {
+  .toolbar {
     display: grid;
     grid-template-columns: 1fr;
     width: 100%;
   }
 
-  .mode-button {
+  /* One compact row of three on the phone. */
+  .mode-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
     width: 100%;
+  }
+
+  .mode-button {
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+    min-height: 0;
+    padding: 6px 4px;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .mode-button small {
+    font-size: 0.72rem;
   }
 
   .learner-stats {
