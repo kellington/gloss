@@ -44,3 +44,7 @@ data/lexical-sources/
 
 # New EPUBs require deliberate review before they enter Git history.
 Books/*.epub
+
+# Generated read-along audio: rebuild with scripts/generate_audio.py.
+data/*/audio/
+data/*/*.audio.json

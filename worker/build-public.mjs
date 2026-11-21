@@ -24,8 +24,13 @@ const FILES = [
 // Directory + filename pattern pairs (non-recursive).
 const PATTERNS = [
   ["assets/icons", /^icon-\d+\.png$/],
-  ["data/monte-cristo", /^c\d{2}\.json$/] // runtime chapter JSON only; not tokens/vocabulary/difficulty-map/.js
+  // Runtime chapter JSON plus the optional read-along manifest; not tokens/vocabulary/difficulty-map/.js
+  ["data/monte-cristo", /^c\d{2}(\.audio)?\.json$/]
 ];
+
+// Read-along clips from scripts/generate_audio.py: gitignored and optional, one folder per chapter.
+const AUDIO_ROOT = "data/monte-cristo/audio";
+const AUDIO_CLIP = /^c\d{2}-p\d{3}-(simple|advanced|original)\.m4a$/;
 
 if (relative(root, out) !== "public") throw new Error(`refusing to clean unexpected path ${out}`);
 rmSync(out, { recursive: true, force: true });
@@ -46,4 +51,17 @@ for (const [dir, pattern] of PATTERNS) {
   }
 }
 
-console.log(`build-public: ${copied.length} files -> public/\n  ${copied.join("\n  ")}`);
+let clips = 0;
+if (existsSync(join(root, AUDIO_ROOT))) {
+  for (const chapter of readdirSync(join(root, AUDIO_ROOT)).sort()) {
+    if (!/^c\d{2}$/.test(chapter)) continue;
+    for (const name of readdirSync(join(root, AUDIO_ROOT, chapter)).sort()) {
+      if (!AUDIO_CLIP.test(name)) continue;
+      copy(`${AUDIO_ROOT}/${chapter}/${name}`);
+      copied.pop(); // counted below, not listed one by one
+      clips += 1;
+    }
+  }
+}
+
+console.log(`build-public: ${copied.length} files + ${clips} audio clips -> public/\n  ${copied.join("\n  ")}`);

@@ -31,7 +31,11 @@ const els = {
   previousPassage: document.querySelector("#previousPassage"),
   nextPassage: document.querySelector("#nextPassage"),
   passageProgress: document.querySelector("#passageProgress"),
-  chapterStatus: document.querySelector("#chapterStatus")
+  chapterStatus: document.querySelector("#chapterStatus"),
+  audioBar: document.querySelector("#audioBar"),
+  audioToggle: document.querySelector("#audioToggle"),
+  audioSpeed: document.querySelector("#audioSpeed"),
+  audioStatus: document.querySelector("#audioStatus")
 };
 
 const state = loadState();
@@ -41,6 +45,7 @@ loadChapter().then((chapter) => {
   glossary = chapter.glossary;
   passages = chapter.passages;
   render();
+  loadAudioManifest();
 }).catch((error) => {
   console.error(error);
   els.subtitle.textContent = "Chapter data could not be loaded.";
@@ -330,6 +335,7 @@ function render() {
   bindInteractions();
   renderHelp();
   renderModel();
+  syncAudio();
 }
 
 function bindInteractions() {
@@ -493,26 +499,160 @@ els.compareToggle.addEventListener("change", () => {
   if (state.compareOpen) els.comparison.scrollIntoView({ behavior: "smooth", block: "nearest" });
 });
 
-els.previousPassage.addEventListener("click", () => {
-  if (state.passageIndex === 0) return;
-  state.passageIndex -= 1;
+function goToPassage(index) {
+  if (index < 0 || index > passages.length - 1) return;
+  state.passageIndex = index;
   state.translationsOpen = [];
   state.currentHelp = null;
   recordEvent("passage_change", { passageIndex: state.passageIndex });
   saveState();
   render();
   els.passageProgress.scrollIntoView({ block: "start" });
+}
+
+els.previousPassage.addEventListener("click", () => goToPassage(state.passageIndex - 1));
+els.nextPassage.addEventListener("click", () => goToPassage(state.passageIndex + 1));
+
+// --- Read-along audio --------------------------------------------------------
+// Optional: clips and their sentence timings come from scripts/generate_audio.py.
+// With no manifest (not generated, file://, offline) the audio bar stays hidden.
+// The reader only knows clip files and timings, never which TTS engine made them.
+
+const AUDIO_MANIFEST_URL = "data/monte-cristo/c01.audio.json";
+const AUDIO_BASE = "data/monte-cristo/";
+const AUDIO_RATES = [0.75, 0.9, 1, 1.25];
+const player = new Audio();
+player.preload = "none";
+let audioManifest = null;
+let audioClipId = null;
+let listening = false; // the reader asked to listen; carries across passages and levels
+let spokenSentenceId = null;
+
+async function loadAudioManifest() {
+  if (location.protocol !== "http:" && location.protocol !== "https:") return;
+  try {
+    const response = await fetch(AUDIO_MANIFEST_URL, { cache: "no-cache" });
+    if (!response.ok) return;
+    const manifest = await response.json();
+    if (!manifest?.clips) return;
+    audioManifest = manifest;
+    syncAudio();
+  } catch {
+    // No audio for this chapter (or a non-JSON 404 page): the reader works without it.
+  }
+}
+
+function currentClip() {
+  const id = `${getPassage().id}-${state.mode}`;
+  const clip = audioManifest?.clips[id];
+  return clip ? { id, ...clip } : null;
+}
+
+function audioRate() {
+  return AUDIO_RATES.includes(state.audioRate) ? state.audioRate : 1;
+}
+
+// Point the player at the clip for the passage and level on screen. Called by every render().
+function syncAudio() {
+  if (!audioManifest) return;
+  const clip = currentClip();
+  if ((clip?.id ?? null) !== audioClipId) {
+    player.pause();
+    audioClipId = clip?.id ?? null;
+    if (clip) {
+      player.src = `${AUDIO_BASE}${clip.file}?v=${clip.hash}`;
+      if (listening) playAudio();
+    } else {
+      player.removeAttribute("src");
+      listening = false;
+    }
+  }
+  renderAudio();
+}
+
+function playAudio() {
+  listening = true;
+  player.defaultPlaybackRate = audioRate();
+  player.playbackRate = audioRate();
+  player.play().catch((error) => {
+    if (error.name === "AbortError") return; // superseded by a passage or level change
+    listening = false;
+    renderAudio();
+  });
+}
+
+function renderAudio() {
+  if (!audioManifest) return;
+  const clip = currentClip();
+  const playing = Boolean(clip) && listening && !player.paused;
+  els.audioBar.hidden = false;
+  els.audioToggle.disabled = !clip;
+  els.audioToggle.textContent = playing ? "Pause" : "Listen";
+  els.audioToggle.setAttribute("aria-pressed", playing ? "true" : "false");
+  els.audioSpeed.textContent = `${audioRate()}×`;
+  els.audioStatus.textContent = !clip ? "No audio for this passage yet."
+    : listening && clip.sentences.length > 1 ? "Tap a sentence to hear it again." : "";
+  els.passageText.classList.toggle("is-listening", listening && Boolean(clip));
+  renderSpeaking();
+}
+
+function renderSpeaking() {
+  const clip = currentClip();
+  let speaking = null;
+  // A one-sentence passage is not highlighted: the whole card would light up.
+  if (clip && listening && clip.sentences.length > 1) {
+    for (const sentence of clip.sentences) {
+      if (player.currentTime >= sentence.start) speaking = sentence.id;
+    }
+  }
+  let node = null;
+  els.passageText.querySelectorAll(".sentence").forEach((item) => {
+    const active = item.dataset.sentence === speaking;
+    item.classList.toggle("is-speaking", active);
+    if (active) node = item;
+  });
+  if (node && speaking !== spokenSentenceId) node.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  spokenSentenceId = speaking;
+}
+
+player.addEventListener("timeupdate", renderSpeaking);
+player.addEventListener("play", renderAudio);
+player.addEventListener("pause", renderAudio);
+player.addEventListener("ended", () => {
+  if (state.passageIndex < passages.length - 1) {
+    goToPassage(state.passageIndex + 1); // still listening, so the next clip starts itself
+  } else {
+    listening = false;
+    renderAudio();
+  }
 });
 
-els.nextPassage.addEventListener("click", () => {
-  if (state.passageIndex >= passages.length - 1) return;
-  state.passageIndex += 1;
-  state.translationsOpen = [];
-  state.currentHelp = null;
-  recordEvent("passage_change", { passageIndex: state.passageIndex });
+els.audioToggle.addEventListener("click", () => {
+  if (!currentClip()) return;
+  if (listening && !player.paused) {
+    listening = false;
+    player.pause();
+  } else {
+    playAudio();
+  }
+});
+
+els.audioSpeed.addEventListener("click", () => {
+  state.audioRate = AUDIO_RATES[(AUDIO_RATES.indexOf(audioRate()) + 1) % AUDIO_RATES.length];
+  player.defaultPlaybackRate = audioRate();
+  player.playbackRate = audioRate();
   saveState();
-  render();
-  els.passageProgress.scrollIntoView({ block: "start" });
+  renderAudio();
+});
+
+// While listening, tapping a sentence (not a word-help button) replays from there.
+els.passageText.addEventListener("click", (event) => {
+  if (!listening || event.target.closest("button") || String(window.getSelection())) return;
+  const sentenceId = event.target.closest(".sentence")?.dataset.sentence;
+  const sentence = currentClip()?.sentences.find((item) => item.id === sentenceId);
+  if (!sentence) return;
+  player.currentTime = sentence.start;
+  playAudio();
 });
 
 els.resetButton.addEventListener("click", () => {

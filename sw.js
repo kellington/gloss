@@ -33,6 +33,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
   if (url.pathname.includes("/api/") || url.pathname.startsWith("/cdn-cgi/")) return;
+  // Read-along audio is fetched with Range requests (206), which the Cache API rejects: leave it to the browser.
+  if (url.pathname.includes("/audio/")) return;
 
   event.respondWith(networkFirst(request));
 });

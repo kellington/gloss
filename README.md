@@ -62,7 +62,7 @@ index.html            App shell
 src/styles.css        Responsive UI and reading surface
 src/app.js            Reader state, events, adaptation rules
 data/monte-cristo/    Processed chapter JSON plus optional file-friendly JS wrappers
-scripts/              EPUB extraction and chapter processing scripts
+scripts/              EPUB extraction, chapter processing, read-along audio generation
 assets/               Local visual assets
 Books/                Source EPUBs
 sw.js, manifest.json  PWA offline cache and home-screen install
@@ -102,6 +102,18 @@ uv pip install --python .venv/bin/python -r requirements-processing.txt
   --lexique data/lexical-sources/Lexique400.tsv \
   --out-json data/monte-cristo/c01.json --out-js data/monte-cristo/c01.js
 ```
+
+### Read-along audio
+
+After processing a chapter, generate its audio (one clip per passage per level, plus sentence timings for the highlight):
+
+```sh
+python3 scripts/generate_audio.py --chapter data/monte-cristo/c01.json
+```
+
+This needs `ffmpeg` and, by default, the macOS `say` voice Thomas (`--voice` picks another; better French voices are a free download in System Settings). Output goes to `data/monte-cristo/audio/c01/` and `c01.audio.json`, both gitignored: regenerate them rather than tracking them. Unchanged passages are skipped on a rerun, and `--limit 5` trials a voice on the first few passages. The reader shows a Listen bar only when the manifest is present.
+
+To switch to another TTS engine, add a provider class in `scripts/generate_audio.py` and pass `--provider`. The manifest format and the reader do not change.
 
 Restart Chapter 1 with this baseline and keep product notes in `project/ideas/feedback-c01.md`. Before processing Chapter 2, review those notes and adjust the app, schema, or processing rules.
 

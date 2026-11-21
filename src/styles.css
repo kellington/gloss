@@ -172,6 +172,49 @@ h1 {
   font-size: 0.95rem;
 }
 
+.audio-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.audio-button,
+.audio-speed {
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--panel);
+  font-weight: 750;
+}
+
+.audio-button {
+  min-width: 92px;
+}
+
+.audio-button[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: #fff;
+  background: var(--accent);
+}
+
+.audio-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.audio-speed {
+  min-width: 62px;
+  font-variant-numeric: tabular-nums;
+}
+
+.audio-status {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 .passage-nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -232,6 +275,17 @@ h1 {
 
 .sentence p {
   margin: 0;
+}
+
+/* The sentence being read aloud. */
+.sentence.is-speaking > p:first-child {
+  border-radius: 2px;
+  background: #f4ecd9;
+  box-shadow: 0 0 0 6px #f4ecd9;
+}
+
+.passage-text.is-listening .sentence {
+  cursor: pointer;
 }
 
 .sentence-actions {

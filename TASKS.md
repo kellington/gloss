@@ -15,6 +15,8 @@ Actively being worked on right now.
 
 - [ ] Read Chapter 1 at the new levels (Simple, Advanced, Original) in the hosted app and note what is off in `project/ideas/feedback-c01.md`.
 
+- [ ] Read-along audio: Rob does `project/deploy/GOOGLE-TTS-SETUP.md`; then add the `google` provider, trial voices on 5 passages, regenerate Chapter 1, commit. Steps in the diary (2026-11-21).
+
 ## Next
 
 The next handful, ordered.
@@ -29,6 +31,7 @@ The next handful, ordered.
 
 Small near-term ideas that don't deserve an issue yet.
 
+- [ ] Audio: offline caching, sentence highlight at the Simple level, R2 storage once there are many chapters.
 - [ ] Add an in-app chapter picker once more than one chapter is processed.
 - [ ] Optional: wire Workers Builds (deploy on push to `main`) — separate gate card.
 - [ ] Add a small smoke-test checklist or browser test for file-mode reader interactions.
@@ -37,6 +40,7 @@ Small near-term ideas that don't deserve an issue yet.
 
 Cleared at each milestone.
 
+- [x] Read-along audio prototype with the macOS `say` voice: generator script, Listen bar, Chapter 1 audio (2026-11-21, uncommitted).
 - [x] Reader layout: side-by-side compare, compact level buttons, chapter/passage heading, Previous / Next under the text (2026-11-21, PR #7).
 - [x] Replace Plain/Guided with Simple (A2) and Advanced (B2); rebuild Chapter 1; deploy and merge (2026-11-20, PR #5).
 - [x] Deploy Gates 1–7: Gloss live at `gloss.minus1over12.com` with Mac ↔ iPhone sync and offline reading (2026-10-16).

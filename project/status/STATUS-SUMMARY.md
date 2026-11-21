@@ -7,6 +7,12 @@ priority: 21
 status: "Live since 2026-10-16 (Cloudflare Worker + D1 + Access; Mac and iPhone sync confirmed). Rob is doing the fresh Chapter 1 reading pass in the hosted app before Chapter 2 is processed; PLAN checklist still lags 3 built items."
 generated: 2026-10-17
 questions_for_rob:
+  - question: "Read-along audio: do the Google Cloud TTS setup in project/deploy/GOOGLE-TTS-SETUP.md, then give the project ID, a go-ahead to spend (5-passage trial or all of Chapter 1) and a voice name if you picked one."
+    blocks: "The audio keeps the robotic macOS voice; the Google provider can't be added or trialled."
+    asked: 2026-11-21
+  - question: "Commit the read-along audio work on vscode now (prototype with the macOS voice), or wait for the Google voice? Also OK the drafted DECISIONS entry on audio?"
+    blocks: "The audio prototype stays uncommitted in the working tree and DECISIONS.md has no audio entry."
+    asked: 2026-11-21
   - question: "PROJECT.md non-goals still exclude sync, cloud infrastructure and storing learning data outside the browser, but Gloss now runs on Cloudflare with D1 sync. Update PROJECT.md to match DECISIONS 2026-10-12?"
     blocks: "PROJECT.md contradicts the live setup; agents can't reconcile it without your call."
     asked: 2026-10-17

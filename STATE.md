@@ -4,7 +4,7 @@
 
 ## Summary
 
-Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA). On 2026-11-19/20 the three reading levels were replaced: **Simple (A2)**, **Advanced (B2)** and **Original** (DECISIONS 2026-11-20). Chapter 1 is rebuilt with authored A2 and B2 text for all 141 paragraphs and a separate vocabulary list per level. Saved progress from the old levels is discarded; Rob is restarting the book from passage 1. Deployed 2026-11-20 and merged in PR #5; Rob confirmed it looks good on the hosted site. On 2026-11-21 the reader layout was reworked (PR #7) and redeployed from `main` (Worker version `6dfe2b60…`).
+Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Access, PWA). On 2026-11-19/20 the three reading levels were replaced: **Simple (A2)**, **Advanced (B2)** and **Original** (DECISIONS 2026-11-20). Chapter 1 is rebuilt with authored A2 and B2 text for all 141 paragraphs and a separate vocabulary list per level. Saved progress from the old levels is discarded; Rob is restarting the book from passage 1. Deployed 2026-11-20 and merged in PR #5; Rob confirmed it looks good on the hosted site. On 2026-11-21 the reader layout was reworked (PR #7) and redeployed from `main` (Worker version `6dfe2b60…`). Later on 2026-11-21 a read-along audio prototype was built locally: it is **not committed and not deployed**, and the macOS voice it uses is too robotic, so Rob chose Google Cloud TTS as the next voice.
 
 ## What's working
 
@@ -14,13 +14,20 @@ Gloss is live at `https://gloss.minus1over12.com/` (Cloudflare Worker + D1 + Acc
 - `scripts/process_chapter.py` merges the adaptations with the EPUB text, enforces the 20-word Simple cap and writes `c01.level-check.json` (FLELex check per level). Result: Simple 0 words above A2 outside its 20 supported words; Advanced 1 flagged word, inside a glossed idiom.
 - Learner state has a version (`STATE_VERSION = 2` in `src/app.js`); older saved state, local or in D1, is replaced with a fresh one.
 - Reader layout: compact one-row level buttons on the phone; heading "Chapter N. Passage X of Y"; Previous / Next side by side under the text, returning the view to the heading; Compare original shows the source beside the passage on wide screens (1100px and up) and under it on narrow ones, and is hidden in Original.
+- Read-along audio, local working tree only: `scripts/generate_audio.py` makes one clip per passage per level plus `c01.audio.json` with sentence timings; the reader has a Listen bar (play/pause, speed, sentence highlight, auto-advance, tap a sentence to replay). Chapter 1 is generated with the macOS voice Thomas (423 clips, 52 min, 18 MB). Checked in Chrome on the Mac at `http://localhost:8789/` with the sound muted.
 - Feedback scratch file in `project/ideas/feedback-c01.md`; level notes in `data/monte-cristo/c01.simplification-notes.md`.
 
 ## In progress
 
 - Rob's fresh read of Chapter 1 at the new levels in the hosted app. Collect notes in `project/ideas/feedback-c01.md`, then revise `c01.adaptations.json` or the brief before authoring Chapter 2.
 
+- Read-along audio: waiting on Rob to do `project/deploy/GOOGLE-TTS-SETUP.md` (Google Cloud project, billing, `gcloud` login). Then add a `google` provider to `scripts/generate_audio.py`, trial 5 passages in two or three French voices, regenerate Chapter 1, and commit. Ordered steps are in the diary, 2026-11-21 "Audio next steps".
+
 ## Known issues
+
+- Audio: the `say` voice is very robotic (Rob, 2026-11-21). Nobody has listened in Safari or on the iPhone. Audio is not cached for offline use. Simple has one block per passage, so no sentence highlight there.
+- Audio and its manifest are gitignored: a deploy only includes them if they were generated on the deploying Mac first. Without them the Listen bar is hidden.
+- `say` can stall when several run at once (one run hung about 5 minutes). A timeout and retry were added; that path has not fired since.
 
 - Simple and Advanced are authored by Claude in-session and checked only against a word list (FLELex). Grammar level and readability have not been reviewed by Rob or a French teacher.
 - Paragraph 24 (*ne point escompter pour 25,000 francs de bénéfice*) is read as "worth more than 25,000 francs"; unconfirmed.
@@ -48,6 +55,10 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 
 ## Open questions
 
+- Which Google voice? Decide after the 5-passage trial.
+- Audio storage at volume: about 18 MB per chapter in Worker static assets is fine for a few chapters; R2 is the likely home for all 55.
+- Should audio work offline in the installed app?
+- PROJECT.md does not mention audio; add it to the success criteria or scope at the milestone checkpoint?
 - Does Simple read without difficulty, and is Advanced clearly between Simple and Dumas? (Rob's reading pass.)
 - Should the reader show more than one paragraph per screen?
 - Drop the "Chapter 1 is ready for a fresh read…" line under the heading to save room?
@@ -58,6 +69,7 @@ The Knowledge vault dashboard serves this repo from `/Users/rob/Documents/GitHub
 
 ## Resolved this session
 
+- 2026-11-21: Read-along audio prototype built and smoke-tested locally (uncommitted). Anthropic has no text-to-speech API; Google Cloud TTS chosen; setup steps written to `project/deploy/GOOGLE-TTS-SETUP.md`.
 - 2026-11-21: Compare original fixed (it rendered off-screen and looked dead); level buttons, heading and Previous / Next reworked (9dec207, PR #7); deployed from `main`.
 - 2026-11-20: Levels replaced with Simple (A2) / Advanced (B2) / Original; Chapter 1 rebuilt; reader and processor updated (879c311). Deployed, then pushed and merged to `main` (PR #5) on Rob's instruction.
 - 2026-11-20: The feedback items on unclear "Eased in Plain" / "Light gloss" labels and unhighlighted *gréé* / *arrimé* are addressed.

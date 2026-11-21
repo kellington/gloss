@@ -215,6 +215,9 @@ python3 -m http.server 5173
 # process chapter 1 (set up .venv and local lexical source tables per README.md first)
 .venv/bin/python scripts/process_chapter.py --epub 'Books/Le_comte_de_Monte-Cristo_Tome_[...]Dumas_Alexandre_btv1b8600196s.epub' --chapter-path OEBPS/e08600196_c01.html --chapter-id c01 --title 'Marseille. L’arrivee.' --flelex data/lexical-sources/FleLex_TT_Beacco.tsv --lexique data/lexical-sources/Lexique400.tsv --out-json data/monte-cristo/c01.json --out-js data/monte-cristo/c01.js
 
+# read-along audio for a processed chapter (needs ffmpeg; default engine is macOS `say`)
+python3 scripts/generate_audio.py --chapter data/monte-cristo/c01.json
+
 # test
 open http://127.0.0.1:8765/gloss/ and smoke-test mode switching, word help, navigation and reset
 
@@ -230,5 +233,6 @@ npm run dev / deploy run worker/build-public.mjs into gitignored public/; deploy
 - Chapter feedback goes in `project/ideas/feedback-c01.md` before processing C02.
 - Persistence lives in this repo's Worker API + D1 (DECISIONS 2026-10-12), not the vault dashboard. Deploys, D1 remote writes and DNS changes still need Rob's go-ahead each time.
 - Deploy allowlist is `worker/build-public.mjs`: a new runtime file must be added there or it won't deploy. API lives in `worker/`, D1 migrations in `migrations/`.
+- Read-along audio (`data/monte-cristo/audio/`, `cNN.audio.json`) is generated and gitignored: it deploys only if it exists locally, so run `scripts/generate_audio.py` before a deploy. The service worker does not cache it (no offline audio).
 - The vault dashboard returns 403 for `.webmanifest`, hence `manifest.json`. Editing root files (`index.html`, `sw.js`, `manifest.json`) needs a `wrangler dev` restart.
 - `Books/*.epub` is tracked in Git; never let it (or `scripts/`, `project/`, protocol files) into the deployed static assets.
